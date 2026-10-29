@@ -2,10 +2,10 @@
 
 ## Team Members:
 
-* 
-* 
-* 
-* 
+* Melissa Jiang
+* Jaimely De Leon
+* Zander Smutz-Ulmer
+* Brianna Guerrero
 
 ## User stories
 

@@ -6,21 +6,23 @@ public class MainMenu {
     
     private static final int DEPOSIT_SELECTION = 1;
     private static final int WITHDRAWAL_SELECTION = 2;
-    private static final int EXIT_SELECTION = 3;
-    private static final int MAX_SELECTION = 3;
+    private static final int CLOSE_ACCOUNT_SELECTION = 3;
+    private static final int EXIT_SELECTION = 4;
+    private static final int MAX_SELECTION = 4;
 
-	private BankAccount userAccount;
+	private Bank bank;
     private Scanner keyboardInput;
 
     public MainMenu() {
-        this.userAccount = new BankAccount();
+        this.bank = new Bank();
         this.keyboardInput = new Scanner(System.in);
     }
 
-    public void displayOptions() {
+    public void displayOptions() 
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdrawal");
-        System.out.println("3. Exit the app");
+        System.out.println("3. Close an account");
+        System.out.println("4. Exit the app");
 
     }
 
@@ -41,7 +43,11 @@ public class MainMenu {
             case 2:
                 performWithdrawal();
                 break;
-            case 3: 
+            case 3:
+                closeAccount();
+                break;
+            case 4:
+                System.out.println("Exiting the app...");
                 break;
             default:
                 System.out.println("Invalid selection, please try again.");
@@ -49,24 +55,51 @@ public class MainMenu {
     }
 
     public void performDeposit() {
+        System.out.print("Enter your account number: ");
+        String accountNumber = keyboardInput.next();
+        BankAccount account = bank.getAccount(accountNumber);
+
+        if (account == null) {
+            System.out.println("Invalid account number.");
+            return;
+    }
         System.out.print("How much would you like to deposit: ");
-        double depositAmount = keyboardInput.nextInt();
+        double depositAmount = keyboardInput.nextDouble();
         try {
-            userAccount.deposit(depositAmount);
+            account.deposit(depositAmount);
             System.out.println("Deposit successful.");
         } catch (IllegalArgumentException exception) {
             System.out.println("Deposit could not be completed.");
         }
     }
-
     private void performWithdrawal() {
+        System.out.print("Enter your account number: ");
+        String accountNumber = keyboardInput.next();
+
+        BankAccount account = bank.getAccount(accountNumber);
+
+        if (account == null) {
+            System.out.println("Invalid account number.");
+            return;
+        }
+
         System.out.print("How much would you like to withdraw: ");
         double withdrawalAmount = keyboardInput.nextDouble();
         try {
-            userAccount.withdraw(withdrawalAmount);
+            account.withdraw(withdrawalAmount);
             System.out.println("Withdrawal successful.");
         } catch (IllegalArgumentException exception) {
             System.out.println("Withdrawal could not be completed.");
+        }
+    }
+
+    private void closeAccount(String accountNumber) {
+        System.out.print("Please enter the account number to close: ");
+        boolean isClosed = bank.closeAccount(accountNumber);
+        if (isClosed) {
+            System.out.println("Account closed successfully.");
+        } else {
+            System.out.println("Account could not be closed.");
         }
     }
 

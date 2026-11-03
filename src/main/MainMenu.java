@@ -6,8 +6,9 @@ public class MainMenu {
     
     private static final int DEPOSIT_SELECTION = 1;
     private static final int WITHDRAWAL_SELECTION = 2;
-    private static final int EXIT_SELECTION = 3;
-    private static final int MAX_SELECTION = 3;
+    private static final int CHECK_BALANCE_SELECTION = 3;
+    private static final int EXIT_SELECTION = 4;
+    private static final int MAX_SELECTION = 4;
 
 	private BankAccount userAccount;
     private Scanner keyboardInput;
@@ -20,7 +21,8 @@ public class MainMenu {
     public void displayOptions() {
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdrawal");
-        System.out.println("3. Exit the app");
+        System.out.println("3. Check balance");
+        System.out.println("4. Exit the app");
 
     }
 
@@ -42,7 +44,11 @@ public class MainMenu {
                 performWithdrawal();
                 break;
             case 3: 
+                checkBalance();
                 break;
+            case 4:
+                System.out.println("Thank you for using the 2307 Bank App!");
+                System.exit(0);
             default:
                 System.out.println("Invalid selection, please try again.");
         }
@@ -68,6 +74,10 @@ public class MainMenu {
         } catch (IllegalArgumentException exception) {
             System.out.println("Withdrawal could not be completed.");
         }
+    }
+
+    private void checkBalance() {
+        System.out.println("Your current balance is: $" + userAccount.getBalance());
     }
 
     public void run() {

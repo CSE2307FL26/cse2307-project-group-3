@@ -18,7 +18,7 @@ public class MainMenu {
         this.keyboardInput = new Scanner(System.in);
     }
 
-    public void displayOptions() 
+    public void displayOptions() {
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdrawal");
         System.out.println("3. Close an account");
@@ -93,8 +93,9 @@ public class MainMenu {
         }
     }
 
-    private void closeAccount(String accountNumber) {
+    private void closeAccount() {
         System.out.print("Please enter the account number to close: ");
+        String accountNumber = keyboardInput.next();
         boolean isClosed = bank.closeAccount(accountNumber);
         if (isClosed) {
             System.out.println("Account closed successfully.");

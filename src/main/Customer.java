@@ -6,10 +6,9 @@ public class Customer {
     private HashMap<String, BankAccount> accountNumbers = new HashMap<>();
     private String customerName;
 
-    public Customer() {
+    public Customer(String customerName) {
         this.customerName = customerName;
         this.accountNumbers = new HashMap<>();
-
     }
 
     public void addAccount(String accountNumber, BankAccount account) {

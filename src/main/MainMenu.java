@@ -14,11 +14,11 @@ public class MainMenu {
     private Scanner keyboardInput;
 
     public MainMenu() {
-        this.customer = new Customer();
+        this.customer = new Customer("John Doe");
         this.keyboardInput = new Scanner(System.in);
     }
 
-    public void displayOptions() 
+    public void displayOptions() {
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdrawal");
         System.out.println("3. Close an account");
@@ -97,7 +97,7 @@ public class MainMenu {
         System.out.print("Enter your account number: ");
         String accountNumber = keyboardInput.next();
         System.out.print("Please enter the account number to close: ");
-        boolean isClosed = accountHolder.closeAccount(accountNumber);
+        boolean isClosed = bank.closeAccount(customer, accountNumber);
         if (isClosed) {
             System.out.println("Account closed successfully.");
         } else {

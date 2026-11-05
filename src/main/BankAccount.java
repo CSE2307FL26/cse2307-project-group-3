@@ -9,22 +9,22 @@ public class BankAccount {
     }
 
     public void deposit(double amount) {
-        if(amount > 0) {
-            this.balance += amount;
-        } else {
+        if (amount <= 0) {
             throw new IllegalArgumentException();
         }
+
+        balance += amount;
     }
 
     public double getBalance() {
-        return this.balance;
+        return balance;
     }
 
     public void withdraw(double amount) {
-        if (amount < 0 || amount > balance) {
+        if (amount <= 0 || amount > balance) {
             throw new IllegalArgumentException();
         }
-            balance -= amount;
-        }
-        
+
+        balance -= amount;
+    }
 }

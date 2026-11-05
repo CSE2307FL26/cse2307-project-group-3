@@ -61,5 +61,4 @@ public class MainMenu {
         MainMenu bankApp = new MainMenu();
         bankApp.run();
     }
-
 }

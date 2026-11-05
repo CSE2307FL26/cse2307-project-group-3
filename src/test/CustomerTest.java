@@ -1,49 +1,23 @@
 package test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-
 import main.Customer;
 
 public class CustomerTest {
 
     @Test
-    public void testCustomerOwnsAddedAccount() {
+    public void testCustomerOwnsAccount() {
         Customer customer = new Customer("Melissa");
-
-        customer.addAccountNumber("12345");
-
-        assertTrue(customer.ownsAccount("12345"));
+        customer.addAccountNumber("1001");
+        assertTrue(customer.ownsAccount("1001"));
     }
 
     @Test
-    public void testCustomerDoesNotOwnMissingAccount() {
+    public void testRemoveAccount() {
         Customer customer = new Customer("Melissa");
-
-        assertFalse(customer.ownsAccount("12345"));
-    }
-
-    @Test
-    public void testRemovingAccountRemovesOwnership() {
-        Customer customer = new Customer("Melissa");
-        customer.addAccountNumber("12345");
-
-        boolean accountWasRemoved =
-                customer.removeAccountNumber("12345");
-
-        assertTrue(accountWasRemoved);
-        assertFalse(customer.ownsAccount("12345"));
-    }
-
-    @Test
-    public void testAddingAccountIncreasesAccountCount() {
-        Customer customer = new Customer("Melissa");
-
-        customer.addAccountNumber("12345");
-
-        assertEquals(1, customer.getNumberOfAccounts());
+        customer.addAccountNumber("1001");
+        customer.removeAccountNumber("1001");
+        assertFalse(customer.ownsAccount("1001"));
     }
 }

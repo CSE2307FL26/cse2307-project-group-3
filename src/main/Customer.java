@@ -1,27 +1,28 @@
 package main;
 
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Customer {
-    private HashMap<String, BankAccount> accountNumbers = new HashMap<>();
+
     private String customerName;
+    private Set<String> accountNumbers;
 
     public Customer(String customerName) {
         this.customerName = customerName;
-        this.accountNumbers = new HashMap<>();
+        this.accountNumbers = new HashSet<String>();
     }
 
-    public void addAccount(String accountNumber, BankAccount account) {
-        accountNumbers.put(accountNumber, account);
-        }
+    public void addAccountNumber(String accountNumber) {
+        accountNumbers.add(accountNumber);
+    }
 
     public boolean ownsAccount(String accountNumber) {
-        return accountNumbers.containsKey(accountNumber);
+        return accountNumbers.contains(accountNumber);
     }
 
     public boolean removeAccountNumber(String accountNumber) {
-        accountNumbers.remove(accountNumber);
-        return accountNumbers.containsKey(accountNumber);
+        return accountNumbers.remove(accountNumber);
     }
 
     public int getNumberOfAccounts() {
@@ -30,9 +31,5 @@ public class Customer {
 
     public String getCustomerName() {
         return customerName;
-    }
-
-    public BankAccount getAccount(String accountNumber) {
-        return accountNumbers.get(accountNumber);
     }
 }

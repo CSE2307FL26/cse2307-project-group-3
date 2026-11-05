@@ -26,4 +26,16 @@ public class BankAccountTest {
             //do nothing, test passes
         }
     }
+
+    @Test 
+    public void CloseAccountWithNonZeroBalance() {
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(100);
+        
+
+        boolean result = testAccount.closeAccount();
+        assertEquals(false, result);
+    }
+
+
 }

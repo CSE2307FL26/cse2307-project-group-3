@@ -10,11 +10,11 @@ public class MainMenu {
     private static final int EXIT_SELECTION = 4;
     private static final int MAX_SELECTION = 4;
 
-	private Bank bank;
+	private Customer customer;
     private Scanner keyboardInput;
 
     public MainMenu() {
-        this.bank = new Bank();
+        this.customer = new Customer();
         this.keyboardInput = new Scanner(System.in);
     }
 
@@ -57,7 +57,7 @@ public class MainMenu {
     public void performDeposit() {
         System.out.print("Enter your account number: ");
         String accountNumber = keyboardInput.next();
-        BankAccount account = bank.getAccount(accountNumber);
+        BankAccount account = customer.getAccount(accountNumber);
 
         if (account == null) {
             System.out.println("Invalid account number.");
@@ -76,7 +76,7 @@ public class MainMenu {
         System.out.print("Enter your account number: ");
         String accountNumber = keyboardInput.next();
 
-        BankAccount account = bank.getAccount(accountNumber);
+        BankAccount account = customer.getAccount(accountNumber);
 
         if (account == null) {
             System.out.println("Invalid account number.");
@@ -93,9 +93,11 @@ public class MainMenu {
         }
     }
 
-    private void closeAccount(String accountNumber) {
+    private void closeAccount() {
+        System.out.print("Enter your account number: ");
+        String accountNumber = keyboardInput.next();
         System.out.print("Please enter the account number to close: ");
-        boolean isClosed = bank.closeAccount(accountNumber);
+        boolean isClosed = accountHolder.closeAccount(accountNumber);
         if (isClosed) {
             System.out.println("Account closed successfully.");
         } else {

@@ -54,7 +54,6 @@ public class BankAccountTest {
             testAccount.withdraw(-50);
             fail();
         } catch (IllegalArgumentException e) {
-            //do nothing, test passes
         }
     }
 }

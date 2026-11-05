@@ -19,8 +19,6 @@ public class BankAccount {
     public double getBalance() {
         return this.balance;
     }
-<<<<<<< HEAD
-=======
 
     public void withdraw(double amount) {
         if (amount < 0 || amount > balance) {
@@ -29,5 +27,4 @@ public class BankAccount {
             balance -= amount;
         }
         
->>>>>>> 0b0f5abacd5feb2344270eebb2ba8d66b72daa8f
 }

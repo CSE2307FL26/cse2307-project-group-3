@@ -26,8 +26,6 @@ public class BankAccountTest {
             //do nothing, test passes
         }
     }
-<<<<<<< HEAD
-=======
 
     @Test
     public void testWithdrawalDecreasesBalance() {
@@ -58,5 +56,4 @@ public class BankAccountTest {
         } catch (IllegalArgumentException e) {
         }
     }
->>>>>>> 0b0f5abacd5feb2344270eebb2ba8d66b72daa8f
 }

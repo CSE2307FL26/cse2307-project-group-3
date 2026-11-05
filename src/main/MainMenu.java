@@ -6,10 +6,12 @@ public class MainMenu {
     
     private static final int DEPOSIT_SELECTION = 1;
     private static final int WITHDRAWAL_SELECTION = 2;
-    private static final int EXIT_SELECTION = 3;
-    private static final int MAX_SELECTION = 3;
+    private static int TRANSFER_SELECTION = 3;
+    private static final int EXIT_SELECTION = 4;
+    private static final int MAX_SELECTION = 4;
 
 	private BankAccount userAccount;
+    private Bank bank;
     private Scanner keyboardInput;
 
     public MainMenu() {
@@ -20,7 +22,8 @@ public class MainMenu {
     public void displayOptions() {
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdrawal");
-        System.out.println("3. Exit the app");
+        System.out.println("3. Initiate a transfer");
+        System.out.println("4. Exit the app");
 
     }
 
@@ -41,8 +44,10 @@ public class MainMenu {
             case 2:
                 performWithdrawal();
                 break;
-            case 3: 
+            case 3:
+                performTransfer();
                 break;
+            case 4:
             default:
                 System.out.println("Invalid selection, please try again.");
         }
@@ -69,7 +74,16 @@ public class MainMenu {
             System.out.println("Withdrawal could not be completed.");
         }
     }
-
+    private void performTransfer() {
+        System.out.print("How much would you like to transfer: ");
+        double transferAmount = keyboardInput.nextDouble();
+        try {
+            userAccount.withdraw(transferAmount);
+            System.out.println("Transfer successful.");
+        } catch (IllegalArgumentException exception) {
+            System.out.println("Transfer could not be completed.");
+        }
+    }
     public void run() {
         System.out.println("Welcome to the 2307 Bank App!");
 

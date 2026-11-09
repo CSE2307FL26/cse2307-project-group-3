@@ -56,4 +56,11 @@ public class BankAccountTest {
         } catch (IllegalArgumentException e) {
         }
     }
+    
+    @Test
+    public void testCheckEmptyAccountBalance() {
+        BankAccount account = new BankAccount();
+        assertEquals(0.0, account.getBalance(), 0.01);
+    }
+
 }

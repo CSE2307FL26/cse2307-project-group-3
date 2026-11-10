@@ -40,4 +40,25 @@ public class AdminTest {
         assertEquals(50, account.getBalance(), 0.01);
     }
 
+
+    @Test
+    public void testInterestDeposit() {
+        Bank bank = new Bank();
+        BankAccount account = new BankAccount();
+        bank.registerExistingAccount("1001", account);
+        bank.deposit("1001", 50.0);
+        bank.depositInterest("admin123", "1001", 5.0);
+        assertEquals(40, account.getBalance(), 0.01);
+    }
+
+    @Test
+    public void testImposterInterestDeposit() {
+        Bank bank = new Bank();
+        BankAccount account = new BankAccount();
+        bank.registerExistingAccount("1001", account);
+        bank.deposit("1001", 50.0);
+        bank.depositInterest("wrongpassword", "1001", 10.0);
+        assertEquals(50, account.getBalance(), 0.01);
+    }
+
 }

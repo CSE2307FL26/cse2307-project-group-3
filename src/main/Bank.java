@@ -54,4 +54,22 @@ public class Bank {
         return true;
     }
 
+    public boolean depositInterest(String adminPassword, String accountNumber, double interestAmount) {
+        if (!authenticateAdminLogin(adminPassword)) {
+            return false;
+        }
+
+
+        BankAccount account = getAccount(accountNumber);
+        if (account == null) {
+            return false;
+        }
+        else {
+            account.deposit(interestAmount);
+        }
+       
+        return true;
+    }
 }
+
+

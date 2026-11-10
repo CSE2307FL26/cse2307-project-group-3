@@ -126,7 +126,7 @@ public class MainMenu {
         System.out.print("Enter the account number to close: ");
         String accountNumber = keyboardInput.next();
 
-        boolean isClosed = bank.closeAccount(accountNumber);
+        boolean isClosed = bank.closeAccount(customer, accountNumber);
 
         if (isClosed) {
             System.out.println("Account closed successfully.");

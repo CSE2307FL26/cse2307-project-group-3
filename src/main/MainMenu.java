@@ -9,8 +9,9 @@ public class MainMenu {
     private static final int CLOSE_ACCOUNT_SELECTION = 3;
     private static final int CHECK_BALANCE_SELECTION = 4;
     private static final int TRANSACTION_HISTORY_SELECTION = 5;
-    private static final int EXIT_SELECTION = 6;
-    private static final int MAX_SELECTION = 6; 
+    private static final int TRANSFER_SELECTION = 6;
+    private static final int EXIT_SELECTION = 7;
+    private static final int MAX_SELECTION = 7;
 
     private Customer customer;
     private Bank bank;
@@ -32,8 +33,8 @@ public class MainMenu {
         System.out.println("3. Close an account");
         System.out.println("4. Check balance");
         System.out.println("5. View transaction history");
-        System.out.println("6. Exit the app");
-
+        System.out.println("6. Transfer to another account");
+        System.out.println("7. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -63,6 +64,9 @@ public class MainMenu {
                 break;
             case TRANSACTION_HISTORY_SELECTION:
                 viewTransactionHistory();
+                break;
+            case TRANSFER_SELECTION:
+                performTransfer();
                 break;
             case EXIT_SELECTION:
                 System.out.println("Exiting the app...");
@@ -122,7 +126,7 @@ public class MainMenu {
         System.out.print("Enter the account number to close: ");
         String accountNumber = keyboardInput.next();
 
-        boolean isClosed = bank.closeAccount(customer, accountNumber);
+        boolean isClosed = bank.closeAccount(accountNumber);
 
         if (isClosed) {
             System.out.println("Account closed successfully.");
@@ -170,6 +174,38 @@ public class MainMenu {
             System.out.println(transaction);
         }
         
+    }
+
+    private void performTransfer() {
+        System.out.print("Enter your account number: ");
+        String senderAccountNumber = keyboardInput.next();
+
+        BankAccount senderAccount = bank.getAccountForCustomer(customer, senderAccountNumber);
+
+        if (senderAccount == null) {
+            System.out.println("Invalid account number.");
+            return;
+        }
+
+        System.out.print("Enter the recipient's account number: ");
+        String receiverAccountNumber = keyboardInput.next();
+
+        BankAccount receiverAccount = bank.getAccountForCustomer(customer, receiverAccountNumber);
+
+        if (receiverAccount == null) {
+            System.out.println("Invalid recipient account number.");
+            return;
+        }
+
+        System.out.print("How much would you like to transfer: ");
+        double transferAmount = keyboardInput.nextDouble();
+
+        try {
+            bank.transferMoney(senderAccountNumber, receiverAccountNumber, transferAmount);
+            System.out.println("Transfer successful.");
+        } catch (IllegalArgumentException exception) {
+            System.out.println("Transfer could not be completed.");
+        }
     }
 
     public void run() {

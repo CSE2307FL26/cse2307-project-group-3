@@ -31,4 +31,28 @@ public class Bank {
         customer.removeAccountNumber(accountNumber);
         return true;
     }
+
+    public void transferMoney(String senderAccount, String receiverAccount, double amount) {
+        BankAccount sender = accounts.get(senderAccount);
+        BankAccount receiver = accounts.get(receiverAccount);
+
+        if (sender == null || receiver == null) {
+            return;
+    }
+
+        if (sender.getBalance() < amount) {
+            return;
+    }
+
+        if (amount <= 0) {
+            return;
+    }
+
+        if (senderAccount.equals(receiverAccount)) {
+            return;
+    }
+
+        sender.withdraw(amount);
+        receiver.deposit(amount);
+    }
 }

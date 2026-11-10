@@ -36,7 +36,7 @@ public class BankAccount {
         balance -= amount;
 
         // Add to transactionHistory
-        transactionHistory.add("Withdrawal: $" + amount);
+        transactionHistory.add("Withdrawal: $" + amount);   
     }
 
     public ArrayList<String> getTransactionHistory() {

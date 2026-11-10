@@ -3,32 +3,55 @@ package main;
 import java.util.HashMap;
 
 public class Bank {
+    private HashMap<String, BankAccount> accountNumbers = new HashMap<>();
 
-    private HashMap<String, BankAccount> accounts;
-
-    public Bank() {
-        this.accounts = new HashMap<String, BankAccount>();
+    public Bank () {
+        this.accountNumbers = new HashMap<>();
     }
-
-    public void registerExistingAccount(String accountNumber, BankAccount account) {
-        accounts.put(accountNumber, account);
-    }
-
-    public BankAccount getAccountForCustomer(
-            Customer customer, String accountNumber) {
-        if (!customer.ownsAccount(accountNumber)) {
-            return null;
+        
+    public void addAccount(String accountNumber, BankAccount account) {
+        accountNumbers.put(accountNumber, account);
         }
-        return accounts.get(accountNumber);
+
+    public boolean ownsAccount(String accountNumber) {
+        return accountNumbers.containsKey(accountNumber);
     }
 
-    public boolean closeAccount(Customer customer, String accountNumber) {
-        BankAccount account = getAccountForCustomer(customer, accountNumber);
-        if (account == null || account.getBalance() != 0) {
-            return false;
-        }
-        accounts.remove(accountNumber);
-        customer.removeAccountNumber(accountNumber);
-        return true;
+    public boolean removeAccountNumber(String accountNumber) {
+        accountNumbers.remove(accountNumber);
+        return accountNumbers.containsKey(accountNumber);
+    }
+
+    public void transferMoney(String senderAccount, String receiverAccount, double amount) {
+        BankAccount sender = accountNumbers.get(senderAccount);
+        BankAccount receiver = accountNumbers.get(receiverAccount);
+
+        if (sender == null || receiver == null) {
+            return;
+    }
+
+        if (sender.getBalance() < amount) {
+            return;
+    }
+
+        if (amount <= 0) {
+            return;
+    }
+
+        if (senderAccount.equals(receiverAccount)) {
+            return;
+    }
+
+        sender.withdraw(amount);
+        receiver.deposit(amount);
+}
+
+    public int getNumberOfAccounts() {
+        return accountNumbers.size();
+    }
+
+    public BankAccount getAccount(String accountNumber) {
+        return accountNumbers.get(accountNumber);
     }
 }
+

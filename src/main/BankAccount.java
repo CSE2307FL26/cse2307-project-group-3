@@ -1,11 +1,16 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BankAccount {
 
     private double balance;
+    private ArrayList<String> transactionHistory;
 
     public BankAccount() {
         this.balance = 0;
+        this.transactionHistory = new ArrayList<String>();
     }
 
     public void deposit(double amount) {
@@ -14,6 +19,9 @@ public class BankAccount {
         }
 
         balance += amount;
+
+        // Add to transactionHistory
+        transactionHistory.add("Deposit: $" + amount);
     }
 
     public double getBalance() {
@@ -26,5 +34,13 @@ public class BankAccount {
         }
 
         balance -= amount;
+
+        // Add to transactionHistory
+        transactionHistory.add("Withdrawal: $" + amount);
     }
+
+    public ArrayList<String> getTransactionHistory() {
+        return transactionHistory;
+    }
+
 }

@@ -8,8 +8,9 @@ public class MainMenu {
     private static final int WITHDRAWAL_SELECTION = 2;
     private static final int CLOSE_ACCOUNT_SELECTION = 3;
     private static final int CHECK_BALANCE_SELECTION = 4;
-    private static final int EXIT_SELECTION = 5;
-    private static final int MAX_SELECTION = 5; 
+    private static final int TRANSACTION_HISTORY_SELECTION = 5;
+    private static final int EXIT_SELECTION = 6;
+    private static final int MAX_SELECTION = 6; 
 
     private Customer customer;
     private Bank bank;
@@ -30,7 +31,9 @@ public class MainMenu {
         System.out.println("2. Make a withdrawal");
         System.out.println("3. Close an account");
         System.out.println("4. Check balance");
-        System.out.println("5. Exit the app");
+        System.out.println("5. View transaction history");
+        System.out.println("6. Exit the app");
+
     }
 
     public int getUserSelection(int max) {
@@ -57,6 +60,9 @@ public class MainMenu {
                 break;
             case CHECK_BALANCE_SELECTION:
                 checkBalance();
+                break;
+            case TRANSACTION_HISTORY_SELECTION:
+                viewTransactionHistory();
                 break;
             case EXIT_SELECTION:
                 System.out.println("Exiting the app...");
@@ -140,6 +146,30 @@ public class MainMenu {
         }
 
         System.out.println("Your current balance is: $" + account.getBalance());
+    }
+
+    private void viewTransactionHistory() {
+        System.out.print("Enter your account number: ");
+        String accountNumber = keyboardInput.next();
+
+        BankAccount account = bank.getAccountForCustomer(customer, accountNumber);
+
+        if (account == null) {
+            System.out.println("Invalid account number.");
+            return;
+        }
+
+        System.out.println("Transaction History for Account " + accountNumber + ":");
+
+        if (account.getTransactionHistory().isEmpty()) {
+            System.out.println("No transactions recorded.");
+            return;
+        }
+
+        for (String transaction : account.getTransactionHistory()) {
+            System.out.println(transaction);
+        }
+        
     }
 
     public void run() {

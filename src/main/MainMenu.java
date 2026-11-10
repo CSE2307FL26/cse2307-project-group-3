@@ -142,6 +142,58 @@ public class MainMenu {
         System.out.println("Your current balance is: $" + account.getBalance());
     }
 
+
+    private void loginAsAdmin() {
+        System.out.print("Please enter the admin password: ");
+        String password = keyboardInput.next();
+        if (bank.authenticateAdminLogin(password)) {
+            System.out.println("Admin login successful.");
+            // Admin functionalities can be added here
+            System.out.println("1. Deposit interest to an account");
+            System.out.println("2. Collect fees from an account");
+            System.out.println("3. Exit the app");
+
+
+            String selection = keyboardInput.next();
+            switch (selection) {
+                case "1":
+                    System.out.print("Enter the account number to deposit interest: ");
+                    String accountNumber = keyboardInput.next();
+                    System.out.print("Enter the interest amount: ");
+                    double interestAmount = keyboardInput.nextDouble();
+                    boolean interestDeposited = bank.depositInterest(password, accountNumber, interestAmount);
+                    if (interestDeposited) {
+                        System.out.println("Interest deposited successfully.");
+                    } else {
+                        System.out.println("Failed to deposit interest.");
+                    }
+                    break;
+                case "2":
+                    System.out.print("Enter the account number to collect fees from: ");
+                    String feeAccountNumber = keyboardInput.next();
+                    System.out.print("Enter the fee amount: ");
+                    double feeAmount = keyboardInput.nextDouble();
+                    boolean feesCollected = bank.collectFees(password, feeAccountNumber, feeAmount);
+                    if (feesCollected) {
+                        System.out.println("Fees collected successfully.");
+                    } else {
+                        System.out.println("Failed to collect fees.");
+                    }
+                    break;
+                case "3":
+                    System.out.println("Exiting the app...");
+                    break;
+                default:
+                    System.out.println("Invalid selection, please try again.");
+            }
+        } else {
+            System.out.println("Invalid admin password.");
+        }
+    }
+
+
+    
+
     public void run() {
         System.out.println("Welcome to the 2307 Bank App!");
 

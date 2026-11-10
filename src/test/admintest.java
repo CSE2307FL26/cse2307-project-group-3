@@ -20,4 +20,24 @@ public class AdminTest {
         assertFalse(bank.authenticateAdminLogin("wrongpassword"));
     }
 
+    @Test
+    public void testFeeCollection() {
+        Bank bank = new Bank();
+        BankAccount account = new BankAccount();
+        bank.registerExistingAccount("1001", account);
+        bank.deposit("1001", 50.0);
+        bank.collectFees("admin123", "1001", 10.0);
+        assertEquals(40, account.getBalance(), 0.01);
+    }
+
+    @Test
+    public void testImposterFeeCollection() {
+        Bank bank = new Bank();
+        BankAccount account = new BankAccount();
+        bank.registerExistingAccount("1001", account);
+        bank.deposit("1001", 50.0);
+        bank.collectFees("wrongpassword", "1001", 10.0);
+        assertEquals(50, account.getBalance(), 0.01);
+    }
+
 }

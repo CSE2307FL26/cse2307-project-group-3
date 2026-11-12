@@ -117,4 +117,56 @@ public class BankTest {
         assertEquals(100, sender.getBalance(), 0.01);
     }
 
+    @Test 
+    public void testCreateAdditionalAccount() {
+        Bank bank = new Bank();
+        Customer customer = new Customer("Melissa");
+        BankAccount account = new BankAccount();
+        
+        bank.registerExistingAccount("1001",  account);
+        customer.addAccountNumber("1001");
+
+        String newAccountNumber = bank.createAdditionalAccount(customer);
+        
+        // Check that new account can be retrieved
+        assertNotNull(bank.getAccountForCustomer(customer, newAccountNumber));
+
+    }
+
+    @Test 
+    public void testCreateAdditionalAccountIncreasesCustomerAccountCount() {
+        Bank bank = new Bank();
+        Customer customer = new Customer("Melissa");
+        BankAccount account = new BankAccount();
+
+        bank.registerExistingAccount("1001", account);
+        customer.addAccountNumber("1001");
+
+        bank.createAdditionalAccount(customer);
+
+        assertEquals(2, customer.getNumberOfAccounts());
+    }
+
+    @Test 
+    public void testAdditionalAccountsHaveUniqueNumbers() {
+        Bank bank = new Bank();
+        Customer customer = new Customer("Melissa");
+        
+        String firstAccountNumber = bank.createAdditionalAccount(customer);
+        String secondAccountNumber = bank.createAdditionalAccount(customer);
+
+        assertNotEquals(firstAccountNumber, secondAccountNumber);
+    }
+
+    @Test 
+    public void testAdditionalAccountsStartsWithZeroBalance() {
+        Bank bank = new Bank();
+        Customer customer = new Customer("Melissa");
+
+        String accountNumber = bank.createAdditionalAccount(customer);
+        BankAccount account = bank.getAccountForCustomer(customer, accountNumber);
+
+        assertEquals(0.0, account.getBalance(), 0.01);
+
+    }
 }

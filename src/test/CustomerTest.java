@@ -20,4 +20,14 @@ public class CustomerTest {
         customer.removeAccountNumber("1001");
         assertFalse(customer.ownsAccount("1001"));
     }
+
+    @Test
+    public void testGetAccountNumbers() {
+        Customer customer = new Customer("Melissa");
+        customer.addAccountNumber("1001");
+        customer.addAccountNumber("1002");
+
+        assertTrue(customer.getAccountNumbers().contains("1001"));
+        assertTrue(customer.getAccountNumbers().contains("1002"));
+    }
 }

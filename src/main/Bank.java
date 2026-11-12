@@ -5,9 +5,11 @@ import java.util.HashMap;
 public class Bank {
 
     private HashMap<String, BankAccount> accounts;
+    private int nextAccountNumber;
 
     public Bank() {
         this.accounts = new HashMap<String, BankAccount>();
+        this.nextAccountNumber = 1001;
     }
 
     public void registerExistingAccount(String accountNumber, BankAccount account) {
@@ -55,4 +57,24 @@ public class Bank {
         sender.withdraw(amount);
         receiver.deposit(amount);
     }
+
+    public String createAdditionalAccount(Customer customer) {
+        String accountNumber = String.valueOf(nextAccountNumber);
+
+        // Check to see if account number is valid to be added
+        while (accounts.containsKey(accountNumber)) {
+            nextAccountNumber++;
+            accountNumber = String.valueOf(nextAccountNumber);
+        }
+
+        BankAccount account = new BankAccount();
+
+        accounts.put(accountNumber, account);
+        customer.addAccountNumber(accountNumber);
+
+        nextAccountNumber++;
+
+        return accountNumber;
+    }
+    
 }

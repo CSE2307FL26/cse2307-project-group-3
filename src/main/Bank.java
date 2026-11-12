@@ -6,6 +6,7 @@ public class Bank {
 
     private HashMap<String, BankAccount> accounts;
     private int nextAccountNumber;
+    private static String AdminPassword = "admin123";
 
     public Bank() {
         this.accounts = new HashMap<String, BankAccount>();
@@ -34,28 +35,25 @@ public class Bank {
         return true;
     }
 
-    public void transferMoney(String senderAccount, String receiverAccount, double amount) {
+    public boolean transferMoney(String senderAccount, String receiverAccount, double amount) {
         BankAccount sender = accounts.get(senderAccount);
         BankAccount receiver = accounts.get(receiverAccount);
 
         if (sender == null || receiver == null) {
-            return;
-    }
-
+            return false;
+        }
         if (sender.getBalance() < amount) {
-            return;
-    }
-
+            return false;
+        }
         if (amount <= 0) {
-            return;
-    }
-
+            return false;
+        }
         if (senderAccount.equals(receiverAccount)) {
-            return;
-    }
-
+            return false;
+        }
         sender.withdraw(amount);
         receiver.deposit(amount);
+        return true;
     }
 
     public String createAdditionalAccount(Customer customer) {
@@ -76,5 +74,39 @@ public class Bank {
 
         return accountNumber;
     }
-    
+
+    public boolean authenticateAdminLogin(String password) {
+        return AdminPassword.equals(password);
+    }
+
+    public boolean collectFees(String adminPassword, String accountNumber, double feeAmount) {
+        if (!authenticateAdminLogin(adminPassword) || feeAmount <= 0) {
+            return false;
+        }
+
+        BankAccount account = accounts.get(accountNumber);
+        if (account == null || feeAmount > account.getBalance()) {
+            return false;
+        }
+        else account.withdraw(feeAmount);
+
+        return true;
+    }
+
+
+    public boolean depositInterest(String adminPassword, String accountNumber, double interestAmount) {
+        if (!authenticateAdminLogin(adminPassword) || interestAmount <= 0) {
+            return false;
+        }
+
+        BankAccount account = accounts.get(accountNumber);
+        if (account == null) {
+            return false;
+        }
+        else {
+            account.deposit(interestAmount);
+        }
+       
+        return true;
+    }
 }

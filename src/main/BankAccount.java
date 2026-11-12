@@ -1,7 +1,6 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class BankAccount {
 
@@ -40,7 +39,7 @@ public class BankAccount {
     }
 
     public ArrayList<String> getTransactionHistory() {
-        return transactionHistory;
+        return new ArrayList<String>(transactionHistory);
     }
 
 }

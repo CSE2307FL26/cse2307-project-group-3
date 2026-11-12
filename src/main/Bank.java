@@ -83,12 +83,12 @@ public class Bank {
     }
 
     public boolean collectFees(String adminPassword, String accountNumber, double feeAmount) {
-        if (!authenticateAdminLogin(adminPassword) || feeAmount < 0) {
+        if (!authenticateAdminLogin(adminPassword) || feeAmount <= 0) {
             return false;
         }
 
         BankAccount account = getAccount(accountNumber);
-        if (account == null) {
+        if (account == null || feeAmount > account.getBalance()) {
             return false;
         }
         else account.withdraw(feeAmount);
@@ -98,7 +98,7 @@ public class Bank {
 
 
     public boolean depositInterest(String adminPassword, String accountNumber, double interestAmount) {
-        if (!authenticateAdminLogin(adminPassword) || interestAmount < 0) {
+        if (!authenticateAdminLogin(adminPassword) || interestAmount <= 0) {
             return false;
         }
 

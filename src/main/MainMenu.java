@@ -268,7 +268,7 @@ public class MainMenu {
         System.out.println("Admin login successful.");
         System.out.println("1. Deposit interest to an account");
         System.out.println("2. Collect fees from an account");
-        System.out.println("3. Exit the app");
+        System.out.println("3. Return to customer menu");
         System.out.print("Please make a selection: ");
 
         String selection = keyboardInput.next();
@@ -282,7 +282,7 @@ public class MainMenu {
                 adminFeeCollection(password);
                 break;
             case "3":
-                System.out.println("Exiting the app...");
+                System.out.println("Returning to cutomer menu...");
                 break;
             default:
                 System.out.println("Invalid selection, please try again.");

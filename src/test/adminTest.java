@@ -42,6 +42,17 @@ public class AdminTest {
     }
 
     @Test
+    public void testInsufficientFundsFeeCollection() {
+        Bank bank = new Bank();
+        BankAccount account = new BankAccount();
+
+        bank.registerExistingAccount("1001", account);
+        account.deposit(50);
+
+        assertFalse(bank.collectFees("admin123", "1001", 100));
+    }
+
+    @Test
     public void testImposterFeeCollection() {
         Bank bank = new Bank();
         BankAccount account = new BankAccount();

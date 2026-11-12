@@ -12,8 +12,9 @@ public class MainMenu {
     private static final int TRANSACTION_HISTORY_SELECTION = 5;
     private static final int TRANSFER_SELECTION = 6;
     private static final int CREATE_ACCOUNT_SELECTION = 7;
-    private static final int EXIT_SELECTION = 8;
-    private static final int MAX_SELECTION = 8;
+    private static final int ADMIN_LOGIN_SELECTION = 8;
+    private static final int EXIT_SELECTION = 9;
+    private static final int MAX_SELECTION = 9;
 
     private Customer customer;
     private Bank bank;
@@ -49,7 +50,8 @@ public class MainMenu {
         System.out.println("5. View transaction history");
         System.out.println("6. Transfer to another account");
         System.out.println("7. Create additional account");
-        System.out.println("8. Exit the app");
+        System.out.println("8. Admin login");
+        System.out.println("9. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -85,6 +87,9 @@ public class MainMenu {
                 break;
             case CREATE_ACCOUNT_SELECTION:
                 createAdditionalAccount();
+                break;
+            case ADMIN_LOGIN_SELECTION:
+                loginAsAdmin();
                 break;
             case EXIT_SELECTION:
                 System.out.println("Exiting the app...");
@@ -232,6 +237,68 @@ public class MainMenu {
             System.out.println("Transfer could not be completed.");
         }
     }
+
+    private void adminInterestDeposit(String password) {
+        System.out.print("Enter the account number to deposit interest: ");
+        String accountNumber = keyboardInput.next();
+        System.out.print("Enter the interest amount: ");
+        double interestAmount = keyboardInput.nextDouble();
+        boolean interestDeposited = bank.depositInterest(password, accountNumber, interestAmount);
+        if (interestDeposited) {
+            System.out.println("Interest deposited successfully.");
+        } else {
+            System.out.println("Failed to deposit interest.");
+        }
+    }
+
+    private void adminFeeCollection(String password) {
+        System.out.print("Enter the account number to collect fees from: ");
+        String accountNumber = keyboardInput.next();
+        System.out.print("Enter the fee amount: ");
+        double feeAmount = keyboardInput.nextDouble();
+        boolean feesCollected = bank.collectFees(password, accountNumber, feeAmount);
+        if (feesCollected) {
+            System.out.println("Fees collected successfully.");
+        } else {
+            System.out.println("Failed to collect fees.");
+        }
+    }
+
+    private void adminOptions(String password) {
+        System.out.println("Admin login successful.");
+        System.out.println("1. Deposit interest to an account");
+        System.out.println("2. Collect fees from an account");
+        System.out.println("3. Exit the app");
+        System.out.print("Please make a selection: ");
+
+        String selection = keyboardInput.next();
+        switch (selection) {
+            case "1":
+                //deposit interest to an account
+                adminInterestDeposit(password);
+                break;
+            case "2":
+                //collect fees from an account
+                adminFeeCollection(password);
+                break;
+            case "3":
+                System.out.println("Exiting the app...");
+                break;
+            default:
+                System.out.println("Invalid selection, please try again.");
+        }
+    }
+
+    private void loginAsAdmin() {
+        System.out.print("Please enter the admin password(admin123): ");
+        String password = keyboardInput.next();
+        if (bank.authenticateAdminLogin(password)) {
+            adminOptions(password);
+        } else {
+            System.out.println("Invalid admin password.");
+        }
+    }
+
 
     public void run() {
         System.out.println("Welcome to the 2307 Bank App!");

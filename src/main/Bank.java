@@ -6,6 +6,7 @@ public class Bank {
 
     private HashMap<String, BankAccount> accounts;
     private int nextAccountNumber;
+    private static String AdminPassword = "admin123";
 
     public Bank() {
         this.accounts = new HashMap<String, BankAccount>();
@@ -76,5 +77,46 @@ public class Bank {
 
         return accountNumber;
     }
+
+    public boolean authenticateAdminLogin(String password) {
+        return AdminPassword.equals(password);
+    }
+
+    public boolean collectFees(String adminPassword, String accountNumber, double feeAmount) {
+        if (!authenticateAdminLogin(adminPassword) || feeAmount < 0) {
+            return false;
+        }
+
+        BankAccount account = getAccount(accountNumber);
+        if (account == null) {
+            return false;
+        }
+        else account.withdraw(feeAmount);
+
+        return true;
+    }
+
+
+    public boolean depositInterest(String adminPassword, String accountNumber, double interestAmount) {
+        if (!authenticateAdminLogin(adminPassword) || interestAmount < 0) {
+            return false;
+        }
+
+        BankAccount account = getAccount(accountNumber);
+        if (account == null) {
+            return false;
+        }
+        else {
+            account.deposit(interestAmount);
+        }
+       
+        return true;
+    }
+
+
+    private BankAccount getAccount(String accountNumber) {
+        return accounts.get(accountNumber);
+    }
+
     
 }

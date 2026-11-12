@@ -39,7 +39,7 @@ public class BankAccount {
     }
 
     public ArrayList<String> getTransactionHistory() {
-        return transactionHistory;
+        return new ArrayList<String>(transactionHistory);
     }
 
 }

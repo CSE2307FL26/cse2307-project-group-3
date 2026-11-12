@@ -35,28 +35,25 @@ public class Bank {
         return true;
     }
 
-    public void transferMoney(String senderAccount, String receiverAccount, double amount) {
+    public boolean transferMoney(String senderAccount, String receiverAccount, double amount) {
         BankAccount sender = accounts.get(senderAccount);
         BankAccount receiver = accounts.get(receiverAccount);
 
         if (sender == null || receiver == null) {
-            return;
-    }
-
+            return false;
+        }
         if (sender.getBalance() < amount) {
-            return;
-    }
-
+            return false;
+        }
         if (amount <= 0) {
-            return;
-    }
-
+            return false;
+        }
         if (senderAccount.equals(receiverAccount)) {
-            return;
-    }
-
+            return false;
+        }
         sender.withdraw(amount);
         receiver.deposit(amount);
+        return true;
     }
 
     public String createAdditionalAccount(Customer customer) {
@@ -87,7 +84,7 @@ public class Bank {
             return false;
         }
 
-        BankAccount account = getAccount(accountNumber);
+        BankAccount account = accounts.get(accountNumber);
         if (account == null || feeAmount > account.getBalance()) {
             return false;
         }
@@ -102,7 +99,7 @@ public class Bank {
             return false;
         }
 
-        BankAccount account = getAccount(accountNumber);
+        BankAccount account = accounts.get(accountNumber);
         if (account == null) {
             return false;
         }
@@ -112,11 +109,4 @@ public class Bank {
        
         return true;
     }
-
-
-    private BankAccount getAccount(String accountNumber) {
-        return accounts.get(accountNumber);
-    }
-
-    
 }

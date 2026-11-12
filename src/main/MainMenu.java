@@ -1,6 +1,7 @@
 package main;
 
 import java.util.Scanner;
+import java.util.Set;
 
 public class MainMenu {
 
@@ -10,8 +11,9 @@ public class MainMenu {
     private static final int CHECK_BALANCE_SELECTION = 4;
     private static final int TRANSACTION_HISTORY_SELECTION = 5;
     private static final int TRANSFER_SELECTION = 6;
-    private static final int EXIT_SELECTION = 7;
-    private static final int MAX_SELECTION = 7;
+    private static final int CREATE_ACCOUNT_SELECTION = 7;
+    private static final int EXIT_SELECTION = 8;
+    private static final int MAX_SELECTION = 8;
 
     private Customer customer;
     private Bank bank;
@@ -28,13 +30,26 @@ public class MainMenu {
     }
 
     public void displayOptions() {
-        System.out.println("1. Make a deposit");
+        System.out.println("\nWelcome, " + customer.getCustomerName() + "!\n");
+        System.out.println("Your Accounts: ");
+        Set<String> accountNumbers = customer.getAccountNumbers();
+        
+        if (accountNumbers.isEmpty()) {
+            System.out.println("No accounts found.");
+        } else {
+            for (String accountNumber : accountNumbers) {
+                System.out.println("Account " + accountNumber);
+            }
+        }
+
+        System.out.println("\n1. Make a deposit");
         System.out.println("2. Make a withdrawal");
         System.out.println("3. Close an account");
         System.out.println("4. Check balance");
         System.out.println("5. View transaction history");
         System.out.println("6. Transfer to another account");
-        System.out.println("7. Exit the app");
+        System.out.println("7. Create additional account");
+        System.out.println("8. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -67,6 +82,9 @@ public class MainMenu {
                 break;
             case TRANSFER_SELECTION:
                 performTransfer();
+                break;
+            case CREATE_ACCOUNT_SELECTION:
+                createAdditionalAccount();
                 break;
             case EXIT_SELECTION:
                 System.out.println("Exiting the app...");
@@ -126,7 +144,7 @@ public class MainMenu {
         System.out.print("Enter the account number to close: ");
         String accountNumber = keyboardInput.next();
 
-        boolean isClosed = bank.closeAccount(accountNumber);
+        boolean isClosed = bank.closeAccount(customer, accountNumber);
 
         if (isClosed) {
             System.out.println("Account closed successfully.");
@@ -163,7 +181,7 @@ public class MainMenu {
             return;
         }
 
-        System.out.println("Transaction History for Account " + accountNumber + ":");
+        System.out.println("\nTransaction History for Account " + accountNumber + ":");
 
         if (account.getTransactionHistory().isEmpty()) {
             System.out.println("No transactions recorded.");
@@ -174,6 +192,13 @@ public class MainMenu {
             System.out.println(transaction);
         }
         
+    }
+
+    private void createAdditionalAccount() {
+        String accountNumber = bank.createAdditionalAccount(customer);
+
+        System.out.println("Account create successfully.");
+        System.out.println("Your new account number is: " + accountNumber);
     }
 
     private void performTransfer() {

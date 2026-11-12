@@ -32,4 +32,8 @@ public class Customer {
     public String getCustomerName() {
         return customerName;
     }
+    
+    public Set<String> getAccountNumbers() {
+        return new HashSet<String>(accountNumbers);
+    }
 }

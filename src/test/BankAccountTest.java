@@ -1,11 +1,9 @@
 package test;
 
 import main.BankAccount;
-import main.Bank;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,27 +27,67 @@ public class BankAccountTest {
         }
     }
 
-    public class BankTest {
-
     @Test
-    public void testCloseAccount() {
-        Bank testBank = new Bank();
-        assertTrue(testBank.closeAccount("accountNumber"));
-    }
-
-    @Test
-    public void testCloseAccountWithNonZeroBalance() {
+    public void testWithdrawalDecreasesBalance() {
         BankAccount testAccount = new BankAccount();
-        Bank testBank = new Bank();
-        testAccount.deposit(50);
-        assertFalse(testBank.closeAccount("accountNumber"));
+        testAccount.deposit(100);
+        testAccount.withdraw(30);
+        assertEquals(70.0, testAccount.getBalance(), 0.01);
     }
 
     @Test
-    public void testCloseAccountWithInvalidAccountNumber() {
-        Bank testBank = new Bank();
-        testBank.closeAccount("999");
-        assertFalse(testBank.closeAccount("accountNumber"));
-}
+    public void testWithdrawalLargerThanBalanceFails() {
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(100.0);
+        try {
+            testAccount.withdraw(150.0);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // do nothing, test passes
+        }
     }
+
+    @Test
+    public void testNegativeWithdrawalFails() {
+        BankAccount testAccount = new BankAccount();
+        try {
+            testAccount.withdraw(-50);
+            fail();
+        } catch (IllegalArgumentException e) {
+        }
+    }
+    
+    @Test
+    public void testCheckEmptyAccountBalance() {
+        BankAccount account = new BankAccount();
+        assertEquals(0.0, account.getBalance(), 0.01);
+    }
+
+    @Test 
+    public void testNewAccountHasEmptyTransactionHistory() {
+        BankAccount account = new BankAccount();
+
+        assertEquals(0, account.getTransactionHistory().size());
+    }
+
+    @Test 
+    public void testDepositInTransactionHistory() {
+        BankAccount account = new BankAccount();
+
+        account.deposit(100);
+
+        assertEquals("Deposit: $100.0", account.getTransactionHistory().get(0));
+    }
+
+    @Test
+    public void testWithdrawalInTransactionHistory() {
+        BankAccount account = new BankAccount();
+        
+        account.deposit(100);
+        account.withdraw(20);
+
+        assertEquals("Withdrawal: $20.0", account.getTransactionHistory().get(1));
+
+    }
+
 }

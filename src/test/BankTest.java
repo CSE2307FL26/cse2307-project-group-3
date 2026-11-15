@@ -1,3 +1,4 @@
+
 package test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,8 +14,10 @@ public class BankTest {
         Bank bank = new Bank();
         Customer customer = new Customer("Melissa");
         BankAccount account = new BankAccount();
+
         bank.registerExistingAccount("1001", account);
         customer.addAccountNumber("1001");
+
         assertTrue(bank.closeAccount(customer, "1001"));
         assertFalse(customer.ownsAccount("1001"));
     }
@@ -24,24 +27,29 @@ public class BankTest {
         Bank bank = new Bank();
         Customer customer = new Customer("Melissa");
         BankAccount account = new BankAccount();
+
         account.deposit(50);
         bank.registerExistingAccount("1001", account);
         customer.addAccountNumber("1001");
+
         assertFalse(bank.closeAccount(customer, "1001"));
     }
 
     @Test
-    public void testTransferDescreasesSenderBalance() {
+    public void testTransferDecreasesSenderBalance() {
         Bank bank = new Bank();
         Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
         BankAccount receiver = new BankAccount();
+
         bank.registerExistingAccount("1001", sender);
         bank.registerExistingAccount("1002", receiver);
         customer.addAccountNumber("1001");
         customer.addAccountNumber("1002");
+
         sender.deposit(100);
-        bank.transferMoney("1001", "1002", 50);
+
+        assertTrue(bank.transferMoney("1001", "1002", 50));
         assertEquals(50, sender.getBalance(), 0.01);
     }
 
@@ -51,12 +59,15 @@ public class BankTest {
         Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
         BankAccount receiver = new BankAccount();
+
         bank.registerExistingAccount("1001", sender);
         bank.registerExistingAccount("1002", receiver);
         customer.addAccountNumber("1001");
         customer.addAccountNumber("1002");
+
         sender.deposit(100);
-        bank.transferMoney("1001", "1002", 50);
+
+        assertTrue(bank.transferMoney("1001", "1002", 50));
         assertEquals(50, receiver.getBalance(), 0.01);
     }
 
@@ -66,16 +77,18 @@ public class BankTest {
         Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
         BankAccount receiver = new BankAccount();
+
         bank.registerExistingAccount("1001", sender);
         bank.registerExistingAccount("1002", receiver);
         customer.addAccountNumber("1001");
         customer.addAccountNumber("1002");
+
         sender.deposit(100);
-        bank.transferMoney("1001", "1002", 150);
+
+        assertFalse(bank.transferMoney("1001", "1002", 150));
         assertEquals(100, sender.getBalance(), 0.01);
         assertEquals(0, receiver.getBalance(), 0.01);
-}
-
+    }
 
     @Test
     public void testTransferFailsWithNegativeAmount() {
@@ -83,57 +96,64 @@ public class BankTest {
         Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
         BankAccount receiver = new BankAccount();
+
         bank.registerExistingAccount("1001", sender);
         bank.registerExistingAccount("1002", receiver);
         customer.addAccountNumber("1001");
         customer.addAccountNumber("1002");
+
         sender.deposit(100);
-        bank.transferMoney("1001", "1002", -50);
+
+        assertFalse(bank.transferMoney("1001", "1002", -50));
         assertEquals(100, sender.getBalance(), 0.01);
         assertEquals(0, receiver.getBalance(), 0.01);
     }
 
     @Test
-    public void testTransferFailswithNonexistentReceiver() {
+    public void testTransferFailsWithNonexistentReceiver() {
         Bank bank = new Bank();
         Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
+
         bank.registerExistingAccount("1001", sender);
         customer.addAccountNumber("1001");
+
         sender.deposit(100);
-        bank.transferMoney("1001", "9999", 50);
+
+        assertFalse(bank.transferMoney("1001", "9999", 50));
         assertEquals(100, sender.getBalance(), 0.01);
     }
 
     @Test
-    public void testTransferFailswithSameAccount() {
+    public void testTransferFailsWithSameAccount() {
         Bank bank = new Bank();
         Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
+
         bank.registerExistingAccount("1001", sender);
         customer.addAccountNumber("1001");
+
         sender.deposit(100);
-        bank.transferMoney("1001", "1001", 50);
+
+        assertFalse(bank.transferMoney("1001", "1001", 50));
         assertEquals(100, sender.getBalance(), 0.01);
     }
 
-    @Test 
+    @Test
     public void testCreateAdditionalAccount() {
         Bank bank = new Bank();
         Customer customer = new Customer("Melissa");
         BankAccount account = new BankAccount();
-        
-        bank.registerExistingAccount("1001",  account);
+
+        bank.registerExistingAccount("1001", account);
         customer.addAccountNumber("1001");
 
         String newAccountNumber = bank.createAdditionalAccount(customer);
-        
-        // Check that new account can be retrieved
-        assertNotNull(bank.getAccountForCustomer(customer, newAccountNumber));
 
+        assertNotNull(bank.getAccountForCustomer(customer, newAccountNumber));
     }
 
-    @Test 
+    @Test
     public void testCreateAdditionalAccountIncreasesCustomerAccountCount() {
         Bank bank = new Bank();
         Customer customer = new Customer("Melissa");
@@ -147,19 +167,19 @@ public class BankTest {
         assertEquals(2, customer.getNumberOfAccounts());
     }
 
-    @Test 
+    @Test
     public void testAdditionalAccountsHaveUniqueNumbers() {
         Bank bank = new Bank();
         Customer customer = new Customer("Melissa");
-        
+
         String firstAccountNumber = bank.createAdditionalAccount(customer);
         String secondAccountNumber = bank.createAdditionalAccount(customer);
 
         assertNotEquals(firstAccountNumber, secondAccountNumber);
     }
 
-    @Test 
-    public void testAdditionalAccountsStartsWithZeroBalance() {
+    @Test
+    public void testAdditionalAccountsStartWithZeroBalance() {
         Bank bank = new Bank();
         Customer customer = new Customer("Melissa");
 
@@ -167,39 +187,51 @@ public class BankTest {
         BankAccount account = bank.getAccountForCustomer(customer, accountNumber);
 
         assertEquals(0.0, account.getBalance(), 0.01);
-
     }
+
+    // Administrator login tests
 
     @Test
     public void testCorrectAdminLogin() {
         Bank bank = new Bank();
+
         assertTrue(bank.authenticateAdminLogin("admin123"));
     }
 
     @Test
     public void testIncorrectAdminLogin() {
         Bank bank = new Bank();
+
         assertFalse(bank.authenticateAdminLogin("wrongpassword"));
     }
+
+    // Administrator fee collection tests
 
     @Test
     public void testFeeCollection() {
         Bank bank = new Bank();
         BankAccount account = new BankAccount();
+
         bank.registerExistingAccount("1001", account);
-        account.deposit(50.0);
-        bank.collectFees("admin123", "1001", 10.0);
+        account.deposit(50);
+
+        bank.authenticateAdminLogin("admin123");
+
+        assertTrue(bank.collectFees("1001", 10));
         assertEquals(40, account.getBalance(), 0.01);
     }
 
     @Test
     public void testNegativeFeeCollection() {
-        //should remove 0, not add 10
         Bank bank = new Bank();
         BankAccount account = new BankAccount();
+
         bank.registerExistingAccount("1001", account);
-        account.deposit(50.0);
-        bank.collectFees("admin123", "1001", -10.0);
+        account.deposit(50);
+
+        bank.authenticateAdminLogin("admin123");
+
+        assertFalse(bank.collectFees("1001", -10));
         assertEquals(50, account.getBalance(), 0.01);
     }
 
@@ -211,27 +243,51 @@ public class BankTest {
         bank.registerExistingAccount("1001", account);
         account.deposit(50);
 
-        assertFalse(bank.collectFees("admin123", "1001", 100));
+        bank.authenticateAdminLogin("admin123");
+
+        assertFalse(bank.collectFees("1001", 100));
+        assertEquals(50, account.getBalance(), 0.01);
     }
 
     @Test
     public void testImposterFeeCollection() {
         Bank bank = new Bank();
         BankAccount account = new BankAccount();
+
         bank.registerExistingAccount("1001", account);
-        account.deposit(50.0);
-        bank.collectFees("wrongpassword", "1001", 10.0);
+        account.deposit(50);
+
+        bank.authenticateAdminLogin("wrongpassword");
+
+        assertFalse(bank.collectFees("1001", 10));
         assertEquals(50, account.getBalance(), 0.01);
     }
 
+    @Test
+    public void testFeeCollectionWithoutAdminLogin() {
+        Bank bank = new Bank();
+        BankAccount account = new BankAccount();
+
+        bank.registerExistingAccount("1001", account);
+        account.deposit(50);
+
+        assertFalse(bank.collectFees("1001", 10));
+        assertEquals(50, account.getBalance(), 0.01);
+    }
+
+    // Administrator interest deposit tests
 
     @Test
     public void testInterestDeposit() {
         Bank bank = new Bank();
         BankAccount account = new BankAccount();
+
         bank.registerExistingAccount("1001", account);
-        account.deposit(50.0);
-        bank.depositInterest("admin123", "1001", 10.0);
+        account.deposit(50);
+
+        bank.authenticateAdminLogin("admin123");
+
+        assertTrue(bank.depositInterest("1001", 10));
         assertEquals(60, account.getBalance(), 0.01);
     }
 
@@ -239,20 +295,71 @@ public class BankTest {
     public void testImposterInterestDeposit() {
         Bank bank = new Bank();
         BankAccount account = new BankAccount();
+
         bank.registerExistingAccount("1001", account);
-        account.deposit(50.0);
-        bank.depositInterest("wrongpassword", "1001", 10.0);
+        account.deposit(50);
+
+        bank.authenticateAdminLogin("wrongpassword");
+
+        assertFalse(bank.depositInterest("1001", 10));
         assertEquals(50, account.getBalance(), 0.01);
     }
 
     @Test
     public void testNegativeInterestDeposit() {
-        //should add 0 not 10
         Bank bank = new Bank();
         BankAccount account = new BankAccount();
+
         bank.registerExistingAccount("1001", account);
-        account.deposit(50.0);
-        bank.depositInterest("admin123", "1001", -5.0);
+        account.deposit(50);
+
+        bank.authenticateAdminLogin("admin123");
+
+        assertFalse(bank.depositInterest("1001", -5));
+        assertEquals(50, account.getBalance(), 0.01);
+    }
+
+    @Test
+    public void testInterestDepositWithoutAdminLogin() {
+        Bank bank = new Bank();
+        BankAccount account = new BankAccount();
+
+        bank.registerExistingAccount("1001", account);
+        account.deposit(50);
+
+        assertFalse(bank.depositInterest("1001", 10));
+        assertEquals(50, account.getBalance(), 0.01);
+    }
+
+    // Administrator logout tests
+
+    @Test
+    public void testAdminCannotCollectFeesAfterLogout() {
+        Bank bank = new Bank();
+        BankAccount account = new BankAccount();
+
+        bank.registerExistingAccount("1001", account);
+        account.deposit(50);
+
+        bank.authenticateAdminLogin("admin123");
+        bank.logoutAdmin();
+
+        assertFalse(bank.collectFees("1001", 10));
+        assertEquals(50, account.getBalance(), 0.01);
+    }
+
+    @Test
+    public void testAdminCannotDepositInterestAfterLogout() {
+        Bank bank = new Bank();
+        BankAccount account = new BankAccount();
+
+        bank.registerExistingAccount("1001", account);
+        account.deposit(50);
+
+        bank.authenticateAdminLogin("admin123");
+        bank.logoutAdmin();
+
+        assertFalse(bank.depositInterest("1001", 10));
         assertEquals(50, account.getBalance(), 0.01);
     }
 }

@@ -6,11 +6,13 @@ public class Bank {
 
     private HashMap<String, BankAccount> accounts;
     private int nextAccountNumber;
-    private static String AdminPassword = "admin123";
+    private static final String ADMIN_PASSWORD = "admin123";
+    private boolean adminLoggedIn;
 
     public Bank() {
         this.accounts = new HashMap<String, BankAccount>();
         this.nextAccountNumber = 1001;
+        this.adminLoggedIn = false;
     }
 
     public void registerExistingAccount(String accountNumber, BankAccount account) {
@@ -76,36 +78,43 @@ public class Bank {
     }
 
     public boolean authenticateAdminLogin(String password) {
-        return AdminPassword.equals(password);
+        adminLoggedIn = ADMIN_PASSWORD.equals(password);
+        return adminLoggedIn;
     }
 
-    public boolean collectFees(String adminPassword, String accountNumber, double feeAmount) {
-        if (!authenticateAdminLogin(adminPassword) || feeAmount <= 0) {
+    public boolean collectFees(String accountNumber, double feeAmount) {
+        if (!adminLoggedIn || feeAmount <= 0) {
             return false;
         }
 
         BankAccount account = accounts.get(accountNumber);
+
         if (account == null || feeAmount > account.getBalance()) {
             return false;
         }
-        else account.withdraw(feeAmount);
 
+        account.withdraw(feeAmount);
         return true;
     }
 
 
-    public boolean depositInterest(String adminPassword, String accountNumber, double interestAmount) {
-        if (!authenticateAdminLogin(adminPassword) || interestAmount <= 0) {
+    public boolean depositInterest(String accountNumber, double interestAmount) {
+        if (!adminLoggedIn || interestAmount <= 0) {
             return false;
         }
 
         BankAccount account = accounts.get(accountNumber);
+
         if (account == null) {
             return false;
         }
-        else {
-            account.deposit(interestAmount);
-        }
+
+        account.deposit(interestAmount);
         return true;
     }
+
+    public void logoutAdmin() {
+        adminLoggedIn = false;
+    }
 }
+

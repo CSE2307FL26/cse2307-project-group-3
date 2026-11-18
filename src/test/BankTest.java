@@ -362,4 +362,68 @@ public class BankTest {
         assertFalse(bank.depositInterest("1001", 10));
         assertEquals(50, account.getBalance(), 0.01);
     }
+
+    @Test 
+    public void testAdminAddsNewCustomer() {
+        Bank bank = new Bank();
+
+        bank.authenticateAdminLogin("admin123");
+
+        Customer newCustomer = bank.addCustomer("Melissa");
+        
+        assertEquals("Melissa", newCustomer.getCustomerName());
+
+    }
+
+    @Test
+    public void testNonAdminCannotAddNewCustomer() {
+        Bank bank = new Bank();
+
+        Customer newCustomer = bank.addCustomer("Melissa");
+        assertEquals(null, newCustomer);
+    }
+
+    @Test 
+    public void testCannotAddNewCustomerAfterLogout() {
+        Bank bank = new Bank();
+
+        bank.authenticateAdminLogin("admin123");
+        bank.logoutAdmin();
+
+        Customer newCustomer = bank.addCustomer("Melissa");
+        assertEquals(null, newCustomer);
+    }
+
+    @Test 
+    public void testNewCustomersRegistered() {
+        Bank bank = new Bank();
+
+        bank.authenticateAdminLogin("admin123");
+
+        bank.addCustomer("Melissa");
+        bank.addCustomer("Brianna");
+
+        assertEquals(2, bank.getNumberOfCustomers());
+    }
+
+    @Test 
+    public void testNewCustomerReceivedAccount() {
+        Bank bank = new Bank();
+        bank.authenticateAdminLogin("admin123");
+
+        Customer customer = bank.addCustomer("Brianna");
+
+        assertEquals(1, customer.getNumberOfAccounts());
+    }
+
+    @Test 
+    public void testSecondCustomerReceivedCorrectAccountNumber() {
+        Bank bank = new Bank();
+        bank.authenticateAdminLogin("admin123");
+
+        bank.addCustomer("John");
+        Customer secondCustomer = bank.addCustomer("Jane");
+
+        assertTrue(secondCustomer.getAccountNumbers().contains("1002"));
+    }
 }

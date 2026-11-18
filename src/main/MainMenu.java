@@ -312,6 +312,21 @@ public class MainMenu {
         }
     }
 
+    private void adminAddCustomer() {
+        System.out.print("Enter the customer's name: ");
+        // There's a leftover newline unless this is added
+        keyboardInput.nextLine();
+        String customerName = keyboardInput.nextLine();
+
+        Customer newCustomer = bank.addCustomer(customerName);
+
+        if (newCustomer != null) {
+            System.out.println("Customer added successfully.");
+        } else {
+            System.out.println("Failed to add customer.");
+        }
+    }
+
     private void adminOptions() {
         System.out.println("Admin login successful.");
         String selection = "";
@@ -319,7 +334,8 @@ public class MainMenu {
         while (!selection.equals("3")) {
             System.out.println("1. Deposit interest to an account");
             System.out.println("2. Collect fees from an account");
-            System.out.println("3. Return to customer menu");
+            System.out.println("3. Add new customer");
+            System.out.println("4. Return to customer menu");
             System.out.print("Please make a selection: ");
 
             selection = keyboardInput.next();
@@ -332,6 +348,9 @@ public class MainMenu {
                     adminFeeCollection();
                     break;
                 case "3":
+                    adminAddCustomer();
+                    break;
+                case "4":
                     bank.logoutAdmin();
                     System.out.println("Returning to customer menu...");
                     break;
@@ -353,7 +372,7 @@ public class MainMenu {
     }
 
     public void run() {
-        System.out.println("Welcome to the 2307 Bank App!");
+        System.out.println("---------- Welcome to the 2307 Bank App! ----------");
         System.out.println("Welcome, " + customer.getCustomerName() + "!");
 
         selectAccount();
@@ -367,7 +386,7 @@ public class MainMenu {
             System.out.println();
         }
 
-        System.out.println("Thank you for using the 2307 Bank App!");
+        System.out.println("----- Thank you for using the 2307 Bank App! -----");
     }
 
     public static void main(String[] args) {

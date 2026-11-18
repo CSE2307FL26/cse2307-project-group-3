@@ -1,6 +1,7 @@
 package main;
 
 import java.util.HashMap;
+import java.util.ArrayList; 
 
 public class Bank {
 
@@ -8,11 +9,13 @@ public class Bank {
     private int nextAccountNumber;
     private static final String ADMIN_PASSWORD = "admin123";
     private boolean adminLoggedIn;
+    private ArrayList<Customer> customers;
 
     public Bank() {
         this.accounts = new HashMap<String, BankAccount>();
         this.nextAccountNumber = 1001;
         this.adminLoggedIn = false;
+        this.customers = new ArrayList<Customer>();
     }
 
     public void registerExistingAccount(String accountNumber, BankAccount account) {
@@ -115,6 +118,23 @@ public class Bank {
 
     public void logoutAdmin() {
         adminLoggedIn = false;
+    }
+
+    public Customer addCustomer(String customerName) {
+        if (!adminLoggedIn) {
+            return null;
+        }
+
+        Customer customer = new Customer(customerName);
+        customers.add(customer);
+
+        createAdditionalAccount(customer);
+
+        return customer;
+    }
+
+    public int getNumberOfCustomers() {
+        return customers.size();
     }
 }
 

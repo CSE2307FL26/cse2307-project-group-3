@@ -107,4 +107,12 @@ public class BankAccountTest {
             // do nothing, test passes
         }
     }
+
+    @Test
+    public void testCheckIfBelowThreshold() {
+        BankAccount account = new BankAccount();
+        account.setThreshold(50.00);
+        account.deposit(30.00);
+        assertEquals(true, account.checkIfBelowThreshold());
+    }
 }

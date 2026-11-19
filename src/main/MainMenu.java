@@ -2,6 +2,7 @@ package main;
 
 import java.util.Scanner;
 import java.util.Set;
+import java.util.List;
 
 public class MainMenu {
 
@@ -29,6 +30,8 @@ public class MainMenu {
         BankAccount demoAccount = new BankAccount();
         bank.registerExistingAccount("1001", demoAccount);
         customer.addAccountNumber("1001");
+
+        bank.registerExistingCustomer(customer);
     }
 
     public void displayOptions() {
@@ -41,11 +44,12 @@ public class MainMenu {
         } else {
             for (String accountNumber : accountNumbers) {
                 if (accountNumber.equals(activeAccountNumber)) {
-                    System.out.println("Account " + accountNumber + " (Active)");
+                    System.out.println("\tAccount " + accountNumber + " (Active)");
                 } else {
-                    System.out.println("Account " + accountNumber);
+                    System.out.println("\tAccount " + accountNumber);
                 }
             }
+            System.out.println();
         }
 
         System.out.println("1. Make a deposit");
@@ -327,15 +331,47 @@ public class MainMenu {
         }
     }
 
+    private void adminViewCustomers() {
+        List<Customer> customers = bank.getCustomers();
+        if (customers == null) {
+            System.out.println("Administrator login required.");
+            return;
+        }
+
+        if (customers.isEmpty()) {
+            System.out.println("No customers found.");
+            return;
+        }
+
+        System.out.println("Customers at 2307 Bank:");
+
+        for (Customer registeredCustomer : customers) {
+            System.out.println("\n" + registeredCustomer.getCustomerName());
+            System.out.println("Accounts: ");
+
+            Set<String> accountNumbers = registeredCustomer.getAccountNumbers();
+
+            if (accountNumbers.isEmpty()) {
+                System.out.println("No accounts found.");
+            }
+            else {
+                for (String accountNumber : accountNumbers) {
+                    System.out.println("\tAccount " + accountNumber);
+                }
+            }
+        }
+    }
+
     private void adminOptions() {
         System.out.println("Admin login successful.");
         String selection = "";
 
-        while (!selection.equals("3")) {
+        while (!selection.equals("5")) {
             System.out.println("1. Deposit interest to an account");
             System.out.println("2. Collect fees from an account");
             System.out.println("3. Add new customer");
-            System.out.println("4. Return to customer menu");
+            System.out.println("4. View all customers and accounts");
+            System.out.println("5. Return to customer menu");
             System.out.print("Please make a selection: ");
 
             selection = keyboardInput.next();
@@ -351,6 +387,9 @@ public class MainMenu {
                     adminAddCustomer();
                     break;
                 case "4":
+                    adminViewCustomers();
+                    break;
+                case "5":
                     bank.logoutAdmin();
                     System.out.println("Returning to customer menu...");
                     break;

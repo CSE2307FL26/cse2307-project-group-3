@@ -22,6 +22,10 @@ public class Bank {
         accounts.put(accountNumber, account);
     }
 
+    public void registerExistingCustomer(Customer customer) {
+        customers.add(customer);
+    }
+
     public BankAccount getAccountForCustomer(
             Customer customer, String accountNumber) {
         if (!customer.ownsAccount(accountNumber)) {
@@ -135,6 +139,14 @@ public class Bank {
 
     public int getNumberOfCustomers() {
         return customers.size();
+    }
+
+    public ArrayList<Customer> getCustomers() {
+        if (!adminLoggedIn) {
+            return null;
+        }
+
+        return new ArrayList<Customer>(customers);
     }
 }
 

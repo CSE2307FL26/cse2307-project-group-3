@@ -6,10 +6,12 @@ public class BankAccount {
 
     private double balance;
     private ArrayList<String> transactionHistory;
+    private double threshold;
 
     public BankAccount() {
         this.balance = 0;
         this.transactionHistory = new ArrayList<String>();
+        this.threshold = threshold;
     }
 
     public void deposit(double amount) {
@@ -42,4 +44,11 @@ public class BankAccount {
         return new ArrayList<String>(transactionHistory);
     }
 
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+
+    public double getThreshold() {
+        return threshold;
+    }
 }

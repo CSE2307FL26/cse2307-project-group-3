@@ -1,8 +1,8 @@
 package main;
 
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.List;
 
 public class MainMenu {
 
@@ -14,8 +14,9 @@ public class MainMenu {
     private static final int TRANSFER_SELECTION = 6;
     private static final int CREATE_ACCOUNT_SELECTION = 7;
     private static final int ADMIN_LOGIN_SELECTION = 8;
-    private static final int EXIT_SELECTION = 9;
-    private static final int MAX_SELECTION = 9;
+    private static final int SET_LOW_BALANCE = 9;
+    private static final int EXIT_SELECTION = 10;
+    private static final int MAX_SELECTION = 10;
 
     private Customer customer;
     private Bank bank;
@@ -60,7 +61,8 @@ public class MainMenu {
         System.out.println("6. Transfer to another account");
         System.out.println("7. Create additional account");
         System.out.println("8. Admin login");
-        System.out.println("9. Exit the app");
+        System.out.println("9. Set low balance alert");
+        System.out.println("10. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -109,6 +111,9 @@ public class MainMenu {
                 break;
             case ADMIN_LOGIN_SELECTION:
                 loginAsAdmin();
+                break;
+            case SET_LOW_BALANCE:
+                setLowBalanceAlert();
                 break;
             case EXIT_SELECTION:
                 System.out.println("Exiting the app...");
@@ -407,6 +412,39 @@ public class MainMenu {
             adminOptions();
         } else {
             System.out.println("Invalid admin password.");
+        }
+    }
+    
+    private void setLowBalanceAlert() {
+        BankAccount account = getActiveAccount();
+        if (account == null) {
+            return;
+        }
+
+        System.out.print("Suggested low balance threshold: $" + account.getBalance() * 0.1);
+        
+        System.out.print("Enter your preferred low balance alert threshold: ");
+        double threshold = keyboardInput.nextDouble();
+
+        if (threshold < 0) {
+            System.out.println("Threshold cannot be negative.");
+            return;
+        }
+
+        System.out.println("Would you like to set the low balance alert to all your accounts? (yes/no): ");
+        String response = keyboardInput.next();
+
+        if (response.equalsIgnoreCase("yes")) {
+            for (String accountNumber : customer.getAccountNumbers()) {
+                BankAccount customerAccount = bank.getAccountForCustomer(customer, accountNumber);
+                if (customerAccount != null) {
+                    customerAccount.setThreshold(threshold);
+                }
+            }
+            System.out.println("Low balance alert threshold set to $" + threshold + " for all accounts.");
+        } else {
+            account.setThreshold(threshold);
+            System.out.println("Low balance alert threshold set to $" + threshold + " for account " + activeAccountNumber + ".");
         }
     }
 

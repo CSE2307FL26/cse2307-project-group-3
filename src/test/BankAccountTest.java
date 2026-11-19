@@ -90,4 +90,21 @@ public class BankAccountTest {
 
     }
 
+    @Test
+    public void testSetAndGetThreshold() {
+        BankAccount account = new BankAccount();
+        account.setThreshold(50.00);
+        assertEquals(50.0, account.getThreshold(), 0.01);
+    }
+
+    @Test
+    public void testThresholdCannotBeNegative() {
+        BankAccount account = new BankAccount();
+        try {
+            account.setThreshold(-10.00);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // do nothing, test passes
+        }
+    }
 }

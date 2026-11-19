@@ -33,9 +33,6 @@ public class BankAccount {
         if (amount <= 0 || amount > balance) {
             throw new IllegalArgumentException();
         }
-
-        balance -= amount;
-
         // Add to transactionHistory
         transactionHistory.add("Withdrawal: $" + amount);   
     }
@@ -50,5 +47,13 @@ public class BankAccount {
 
     public double getThreshold() {
         return threshold;
+    }
+
+    public boolean checkIfBelowThreshold() {
+        if (balance < threshold) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

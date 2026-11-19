@@ -191,7 +191,18 @@ public class MainMenu {
 
         System.out.print("How much would you like to withdraw: ");
         double withdrawalAmount = keyboardInput.nextDouble();
-
+        
+        if (account.getBalance() - withdrawalAmount < account.getThreshold()) {
+            System.out.println("This withdrawal would bring your balance below the set threshold of $" + account.getThreshold() + ". Would you like to proceed? (Y/N):");
+            String response = keyboardInput.next();
+            if (!response.equalsIgnoreCase("Y")) {
+                System.out.println("Withdrawal cancelled.");
+                return;
+            }
+            else {
+                System.out.println("Proceeding with withdrawal...");
+            }
+        }
         try {
             account.withdraw(withdrawalAmount);
             System.out.println("Withdrawal successful.");
@@ -227,6 +238,14 @@ public class MainMenu {
         }
 
         System.out.println("Your current balance is: $" + account.getBalance());
+        if (account.checkIfBelowThreshold()) {
+            System.out.println("Alert: Your balance is below the set threshold of $" + account.getThreshold());
+            System.out.println("Please consider depositing $" + (account.getBalance() - account.getThreshold()) + " or more to bring your balance above the threshold and avoid potential fees.");
+        }
+
+        if(!account.checkIfBelowThreshold()) {
+            System.out.println("Your balance is above the set threshold of $" + account.getThreshold());
+        }
     }
 
     private void viewTransactionHistory() {
@@ -279,6 +298,14 @@ public class MainMenu {
         System.out.print("How much would you like to transfer: ");
         double transferAmount = keyboardInput.nextDouble();
 
+        if (transferAmount <= senderAccount.getBalance() && senderAccount.getBalance() - transferAmount < senderAccount.getThreshold()) {
+            System.out.print("This transfer would bring your balance below your threshold of $" + senderAccount.getThreshold() + ". Proceed? (Y/N): ");
+        
+            if (!keyboardInput.next().equalsIgnoreCase("Y")) {
+                System.out.println("Transfer cancelled.");
+            return;
+    }
+}
         boolean transferred = bank.transferMoney(
                 activeAccountNumber, receiverAccountNumber, transferAmount);
 
@@ -431,10 +458,10 @@ public class MainMenu {
             return;
         }
 
-        System.out.println("Would you like to set the low balance alert to all your accounts? (yes/no): ");
+        System.out.println("Would you like to set the low balance alert to all your accounts? (Y/N): ");
         String response = keyboardInput.next();
 
-        if (response.equalsIgnoreCase("yes")) {
+        if (response.equalsIgnoreCase("Y")) {
             for (String accountNumber : customer.getAccountNumbers()) {
                 BankAccount customerAccount = bank.getAccountForCustomer(customer, accountNumber);
                 if (customerAccount != null) {

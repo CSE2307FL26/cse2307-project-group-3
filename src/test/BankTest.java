@@ -426,4 +426,33 @@ public class BankTest {
 
         assertTrue(secondCustomer.getAccountNumbers().contains("1002"));
     }
+
+    @Test 
+    public void testAdminCanViewCustomers() {
+        Bank bank = new Bank();
+
+        bank.authenticateAdminLogin("admin123");
+        bank.addCustomer("Brianna");
+        Customer customer = bank.addCustomer("Jaimely");
+
+        assertTrue(bank.getCustomers().contains(customer));
+    }
+
+    @Test 
+    public void testNonAdminCannotViewCustomers() {
+        Bank bank = new Bank();
+        
+        assertEquals(null, bank.getCustomers());
+    }
+
+    @Test 
+    public void testCannotViewCustomersAfterLogout() {
+        Bank bank = new Bank();
+
+        bank.authenticateAdminLogin("admin123");
+        bank.addCustomer("Melissa");
+        bank.logoutAdmin();
+
+        assertEquals(null, bank.getCustomers());
+    }
 }

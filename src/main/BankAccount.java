@@ -11,16 +11,14 @@ public class BankAccount {
     public BankAccount() {
         this.balance = 0;
         this.transactionHistory = new ArrayList<String>();
-        this.threshold = threshold;
+        this.threshold = 0;
     }
 
     public void deposit(double amount) {
-        if (amount <= 0) {
+        if (!Double.isFinite(amount) || amount <= 0) {
             throw new IllegalArgumentException();
         }
-
         balance += amount;
-
         // Add to transactionHistory
         transactionHistory.add("Deposit: $" + amount);
     }
@@ -30,9 +28,10 @@ public class BankAccount {
     }
 
     public void withdraw(double amount) {
-        if (amount <= 0 || amount > balance) {
+        if (!Double.isFinite(amount) || amount <= 0 || amount > balance) {
             throw new IllegalArgumentException();
         }
+        balance -= amount;
         // Add to transactionHistory
         transactionHistory.add("Withdrawal: $" + amount);   
     }
@@ -42,6 +41,9 @@ public class BankAccount {
     }
 
     public void setThreshold(double threshold) {
+        if (!Double.isFinite(threshold) || threshold < 0) {
+            throw new IllegalArgumentException();
+        }
         this.threshold = threshold;
     }
 
@@ -50,10 +52,6 @@ public class BankAccount {
     }
 
     public boolean checkIfBelowThreshold() {
-        if (balance < threshold) {
-            return true;
-        } else {
-            return false;
-        }
+        return threshold > 0 && balance < threshold;
     }
 }

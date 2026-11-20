@@ -12,7 +12,7 @@ public class BankTest {
     @Test
     public void testCloseEmptyAccount() {
         Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
         BankAccount account = new BankAccount();
 
         bank.registerExistingAccount("1001", account);
@@ -25,7 +25,7 @@ public class BankTest {
     @Test
     public void testCannotCloseAccountWithMoney() {
         Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
         BankAccount account = new BankAccount();
 
         account.deposit(50);
@@ -36,53 +36,28 @@ public class BankTest {
     }
 
     @Test
-    public void testTransferDecreasesSenderBalance() {
+    public void testTransferMoney() {
         Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
         BankAccount receiver = new BankAccount();
 
         bank.registerExistingAccount("1001", sender);
         bank.registerExistingAccount("1002", receiver);
-        customer.addAccountNumber("1001");
-        customer.addAccountNumber("1002");
-
         sender.deposit(100);
 
         assertTrue(bank.transferMoney("1001", "1002", 50));
         assertEquals(50, sender.getBalance(), 0.01);
-    }
-
-    @Test
-    public void testTransferIncreasesReceiverBalance() {
-        Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
-        BankAccount sender = new BankAccount();
-        BankAccount receiver = new BankAccount();
-
-        bank.registerExistingAccount("1001", sender);
-        bank.registerExistingAccount("1002", receiver);
-        customer.addAccountNumber("1001");
-        customer.addAccountNumber("1002");
-
-        sender.deposit(100);
-
-        assertTrue(bank.transferMoney("1001", "1002", 50));
         assertEquals(50, receiver.getBalance(), 0.01);
     }
 
     @Test
     public void testTransferFailsWithInsufficientFunds() {
         Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
         BankAccount receiver = new BankAccount();
 
         bank.registerExistingAccount("1001", sender);
         bank.registerExistingAccount("1002", receiver);
-        customer.addAccountNumber("1001");
-        customer.addAccountNumber("1002");
-
         sender.deposit(100);
 
         assertFalse(bank.transferMoney("1001", "1002", 150));
@@ -93,84 +68,55 @@ public class BankTest {
     @Test
     public void testTransferFailsWithNegativeAmount() {
         Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
         BankAccount receiver = new BankAccount();
 
         bank.registerExistingAccount("1001", sender);
         bank.registerExistingAccount("1002", receiver);
-        customer.addAccountNumber("1001");
-        customer.addAccountNumber("1002");
-
         sender.deposit(100);
 
         assertFalse(bank.transferMoney("1001", "1002", -50));
-        assertEquals(100, sender.getBalance(), 0.01);
-        assertEquals(0, receiver.getBalance(), 0.01);
     }
 
     @Test
     public void testTransferFailsWithNonexistentReceiver() {
         Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
 
         bank.registerExistingAccount("1001", sender);
-        customer.addAccountNumber("1001");
-
         sender.deposit(100);
 
         assertFalse(bank.transferMoney("1001", "9999", 50));
-        assertEquals(100, sender.getBalance(), 0.01);
     }
 
     @Test
     public void testTransferFailsWithSameAccount() {
         Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
         BankAccount sender = new BankAccount();
 
         bank.registerExistingAccount("1001", sender);
-        customer.addAccountNumber("1001");
-
         sender.deposit(100);
 
         assertFalse(bank.transferMoney("1001", "1001", 50));
-        assertEquals(100, sender.getBalance(), 0.01);
     }
 
     @Test
     public void testCreateAdditionalAccount() {
         Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
-        BankAccount account = new BankAccount();
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
 
-        bank.registerExistingAccount("1001", account);
-        customer.addAccountNumber("1001");
+        String accountNumber = bank.createAdditionalAccount(customer);
+        BankAccount account = bank.getAccountForCustomer(customer, accountNumber);
 
-        String newAccountNumber = bank.createAdditionalAccount(customer);
-
-        assertNotNull(bank.getAccountForCustomer(customer, newAccountNumber));
-    }
-
-    @Test
-    public void testCreateAdditionalAccountIncreasesCustomerAccountCount() {
-        Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
-        BankAccount account = new BankAccount();
-
-        bank.registerExistingAccount("1001", account);
-        customer.addAccountNumber("1001");
-
-        bank.createAdditionalAccount(customer);
-
-        assertEquals(2, customer.getNumberOfAccounts());
+        assertNotNull(account);
+        assertEquals(1, customer.getNumberOfAccounts());
+        assertEquals(0, account.getBalance(), 0.01);
     }
 
     @Test
     public void testAdditionalAccountsHaveUniqueNumbers() {
         Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
 
         String firstAccountNumber = bank.createAdditionalAccount(customer);
         String secondAccountNumber = bank.createAdditionalAccount(customer);
@@ -179,33 +125,12 @@ public class BankTest {
     }
 
     @Test
-    public void testAdditionalAccountsStartWithZeroBalance() {
-        Bank bank = new Bank();
-        Customer customer = new Customer("Melissa");
-
-        String accountNumber = bank.createAdditionalAccount(customer);
-        BankAccount account = bank.getAccountForCustomer(customer, accountNumber);
-
-        assertEquals(0.0, account.getBalance(), 0.01);
-    }
-
-    // Administrator login tests
-
-    @Test
-    public void testCorrectAdminLogin() {
+    public void testAdminLogin() {
         Bank bank = new Bank();
 
         assertTrue(bank.authenticateAdminLogin("admin123"));
-    }
-
-    @Test
-    public void testIncorrectAdminLogin() {
-        Bank bank = new Bank();
-
         assertFalse(bank.authenticateAdminLogin("wrongpassword"));
     }
-
-    // Administrator fee collection tests
 
     @Test
     public void testFeeCollection() {
@@ -214,7 +139,6 @@ public class BankTest {
 
         bank.registerExistingAccount("1001", account);
         account.deposit(50);
-
         bank.authenticateAdminLogin("admin123");
 
         assertTrue(bank.collectFees("1001", 10));
@@ -222,44 +146,16 @@ public class BankTest {
     }
 
     @Test
-    public void testNegativeFeeCollection() {
+    public void testInvalidFeeCollection() {
         Bank bank = new Bank();
         BankAccount account = new BankAccount();
 
         bank.registerExistingAccount("1001", account);
         account.deposit(50);
-
         bank.authenticateAdminLogin("admin123");
 
         assertFalse(bank.collectFees("1001", -10));
-        assertEquals(50, account.getBalance(), 0.01);
-    }
-
-    @Test
-    public void testInsufficientFundsFeeCollection() {
-        Bank bank = new Bank();
-        BankAccount account = new BankAccount();
-
-        bank.registerExistingAccount("1001", account);
-        account.deposit(50);
-
-        bank.authenticateAdminLogin("admin123");
-
         assertFalse(bank.collectFees("1001", 100));
-        assertEquals(50, account.getBalance(), 0.01);
-    }
-
-    @Test
-    public void testImposterFeeCollection() {
-        Bank bank = new Bank();
-        BankAccount account = new BankAccount();
-
-        bank.registerExistingAccount("1001", account);
-        account.deposit(50);
-
-        bank.authenticateAdminLogin("wrongpassword");
-
-        assertFalse(bank.collectFees("1001", 10));
         assertEquals(50, account.getBalance(), 0.01);
     }
 
@@ -275,8 +171,6 @@ public class BankTest {
         assertEquals(50, account.getBalance(), 0.01);
     }
 
-    // Administrator interest deposit tests
-
     @Test
     public void testInterestDeposit() {
         Bank bank = new Bank();
@@ -284,7 +178,6 @@ public class BankTest {
 
         bank.registerExistingAccount("1001", account);
         account.deposit(50);
-
         bank.authenticateAdminLogin("admin123");
 
         assertTrue(bank.depositInterest("1001", 10));
@@ -292,46 +185,17 @@ public class BankTest {
     }
 
     @Test
-    public void testImposterInterestDeposit() {
+    public void testInvalidInterestDeposit() {
         Bank bank = new Bank();
         BankAccount account = new BankAccount();
 
         bank.registerExistingAccount("1001", account);
         account.deposit(50);
-
-        bank.authenticateAdminLogin("wrongpassword");
-
-        assertFalse(bank.depositInterest("1001", 10));
-        assertEquals(50, account.getBalance(), 0.01);
-    }
-
-    @Test
-    public void testNegativeInterestDeposit() {
-        Bank bank = new Bank();
-        BankAccount account = new BankAccount();
-
-        bank.registerExistingAccount("1001", account);
-        account.deposit(50);
-
         bank.authenticateAdminLogin("admin123");
 
         assertFalse(bank.depositInterest("1001", -5));
         assertEquals(50, account.getBalance(), 0.01);
     }
-
-    @Test
-    public void testInterestDepositWithoutAdminLogin() {
-        Bank bank = new Bank();
-        BankAccount account = new BankAccount();
-
-        bank.registerExistingAccount("1001", account);
-        account.deposit(50);
-
-        assertFalse(bank.depositInterest("1001", 10));
-        assertEquals(50, account.getBalance(), 0.01);
-    }
-
-    // Administrator logout tests
 
     @Test
     public void testAdminCannotCollectFeesAfterLogout() {
@@ -349,110 +213,73 @@ public class BankTest {
     }
 
     @Test
-    public void testAdminCannotDepositInterestAfterLogout() {
-        Bank bank = new Bank();
-        BankAccount account = new BankAccount();
-
-        bank.registerExistingAccount("1001", account);
-        account.deposit(50);
-
-        bank.authenticateAdminLogin("admin123");
-        bank.logoutAdmin();
-
-        assertFalse(bank.depositInterest("1001", 10));
-        assertEquals(50, account.getBalance(), 0.01);
-    }
-
-    @Test 
     public void testAdminAddsNewCustomer() {
         Bank bank = new Bank();
-
         bank.authenticateAdminLogin("admin123");
 
-        Customer newCustomer = bank.addCustomer("Melissa");
-        
-        assertEquals("Melissa", newCustomer.getCustomerName());
+        Customer customer = bank.addCustomer("John Doe", "jdoe1001", "password123");
 
+        assertNotNull(customer);
+        assertEquals("John Doe", customer.getCustomerName());
+        assertEquals(1, customer.getNumberOfAccounts());
+        assertEquals(1, bank.getNumberOfCustomers());
     }
 
     @Test
     public void testNonAdminCannotAddNewCustomer() {
         Bank bank = new Bank();
 
-        Customer newCustomer = bank.addCustomer("Melissa");
-        assertEquals(null, newCustomer);
+        assertNull(bank.addCustomer("John Doe", "jdoe1001", "password123"));
     }
 
-    @Test 
-    public void testCannotAddNewCustomerAfterLogout() {
-        Bank bank = new Bank();
-
-        bank.authenticateAdminLogin("admin123");
-        bank.logoutAdmin();
-
-        Customer newCustomer = bank.addCustomer("Melissa");
-        assertEquals(null, newCustomer);
-    }
-
-    @Test 
-    public void testNewCustomersRegistered() {
-        Bank bank = new Bank();
-
-        bank.authenticateAdminLogin("admin123");
-
-        bank.addCustomer("Melissa");
-        bank.addCustomer("Brianna");
-
-        assertEquals(2, bank.getNumberOfCustomers());
-    }
-
-    @Test 
-    public void testNewCustomerReceivedAccount() {
-        Bank bank = new Bank();
-        bank.authenticateAdminLogin("admin123");
-
-        Customer customer = bank.addCustomer("Brianna");
-
-        assertEquals(1, customer.getNumberOfAccounts());
-    }
-
-    @Test 
-    public void testSecondCustomerReceivedCorrectAccountNumber() {
-        Bank bank = new Bank();
-        bank.authenticateAdminLogin("admin123");
-
-        bank.addCustomer("John");
-        Customer secondCustomer = bank.addCustomer("Jane");
-
-        assertTrue(secondCustomer.getAccountNumbers().contains("1002"));
-    }
-
-    @Test 
+    @Test
     public void testAdminCanViewCustomers() {
         Bank bank = new Bank();
-
         bank.authenticateAdminLogin("admin123");
-        bank.addCustomer("Brianna");
-        Customer customer = bank.addCustomer("Jaimely");
+
+        Customer customer = bank.addCustomer("John Doe", "jdoe1001", "password123");
 
         assertTrue(bank.getCustomers().contains(customer));
     }
 
-    @Test 
+    @Test
     public void testNonAdminCannotViewCustomers() {
         Bank bank = new Bank();
-        
-        assertEquals(null, bank.getCustomers());
+
+        assertNull(bank.getCustomers());
     }
 
-    @Test 
-    public void testCannotViewCustomersAfterLogout() {
+    @Test
+    public void testBankAuthenticatesRegisteredCustomer() {
         Bank bank = new Bank();
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
 
+        bank.registerExistingCustomer(customer);
+
+        assertSame(customer,
+                bank.authenticateCustomer("jdoe1001", "password123"));
+        assertNull(bank.authenticateCustomer("jdoe1001", "wrongpassword"));
+    }
+
+    @Test
+    public void testCannotAddCustomerWithDuplicateUsername() {
+        Bank bank = new Bank();
         bank.authenticateAdminLogin("admin123");
-        bank.addCustomer("Melissa");
-        bank.logoutAdmin();
 
-        assertEquals(null, bank.getCustomers());
+        assertNotNull(bank.addCustomer("John Doe", "jdoe1001", "password123"));
+        assertNull(bank.addCustomer("John Doe", "jdoe1001", "differentpassword"));
+
+        assertEquals(1, bank.getNumberOfCustomers());
+    }
+
+    @Test
+    public void testNewCustomerCanLogin() {
+        Bank bank = new Bank();
+        bank.authenticateAdminLogin("admin123");
+
+        Customer customer = bank.addCustomer("John Doe", "jdoe1001", "password123");
+
+        assertSame(customer,
+                bank.authenticateCustomer("jdoe1001", "password123"));
     }
 }

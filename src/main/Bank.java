@@ -48,20 +48,15 @@ public class Bank {
         BankAccount sender = accounts.get(senderAccount);
         BankAccount receiver = accounts.get(receiverAccount);
 
-        if (sender == null || receiver == null) {
-            return false;
-        }
-        if (sender.getBalance() < amount) {
-            return false;
-        }
-        if (amount <= 0) {
-            return false;
-        }
-        if (senderAccount.equals(receiverAccount)) {
+        if (sender == null || receiver == null
+                || amount <= 0 || !Double.isFinite(amount)
+                || senderAccount.equals(receiverAccount)
+                || sender.getBalance() < amount) {
             return false;
         }
         sender.withdraw(amount);
         receiver.deposit(amount);
+
         return true;
     }
 
@@ -93,13 +88,11 @@ public class Bank {
         if (!adminLoggedIn || feeAmount <= 0) {
             return false;
         }
-
         BankAccount account = accounts.get(accountNumber);
 
         if (account == null || feeAmount > account.getBalance()) {
             return false;
         }
-
         account.withdraw(feeAmount);
         return true;
     }
@@ -109,13 +102,11 @@ public class Bank {
         if (!adminLoggedIn || interestAmount <= 0) {
             return false;
         }
-
         BankAccount account = accounts.get(accountNumber);
 
         if (account == null) {
             return false;
         }
-
         account.deposit(interestAmount);
         return true;
     }
@@ -124,14 +115,14 @@ public class Bank {
         adminLoggedIn = false;
     }
 
-    public Customer addCustomer(String customerName) {
-        if (!adminLoggedIn) {
+    public Customer addCustomer(String customerName, String username, String password) {
+        if (!adminLoggedIn || customerName.trim().isEmpty()
+                || username.trim().isEmpty() || password.isEmpty()
+                || usernameExists(username)) {
             return null;
         }
-
-        Customer customer = new Customer(customerName);
+        Customer customer = new Customer(customerName, username, password);
         customers.add(customer);
-
         createAdditionalAccount(customer);
 
         return customer;
@@ -147,6 +138,24 @@ public class Bank {
         }
 
         return new ArrayList<Customer>(customers);
+    }
+
+    public Customer authenticateCustomer(String username, String password) {
+        for (Customer customer : customers) {
+            if (customer.authenticate(username, password)) {
+                return customer;
+            }
+        }
+        return null;
+    }
+
+    public boolean usernameExists(String username) {
+        for (Customer customer : customers) {
+            if (customer.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

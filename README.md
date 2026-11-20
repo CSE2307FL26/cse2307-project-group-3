@@ -21,7 +21,7 @@
 
 ## What user stories do you intend to complete next iteration?
 1. A bank customer should be able to log in with a username and password.
-2. A bank customer should be able to export their transaction history to a file.
+2. A bank customer should be able to switch to another account they own.
 3. A bank customer should be able to set a low-balance alert amount for an account. 
 4. A bank customer should be able to see a low-balance warning when their balance falls below their chosen alert amount.
 5. A bank administrator should be able to add a new customer to the bank.

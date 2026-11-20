@@ -38,14 +38,17 @@ public class BankTest {
     @Test
     public void testTransferMoney() {
         Bank bank = new Bank();
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
         BankAccount sender = new BankAccount();
         BankAccount receiver = new BankAccount();
 
         bank.registerExistingAccount("1001", sender);
         bank.registerExistingAccount("1002", receiver);
+        customer.addAccountNumber("1001");
+        customer.addAccountNumber("1002");
         sender.deposit(100);
 
-        assertTrue(bank.transferMoney("1001", "1002", 50));
+        assertTrue(bank.transferMoney(customer, "1001", "1002", 50));
         assertEquals(50, sender.getBalance(), 0.01);
         assertEquals(50, receiver.getBalance(), 0.01);
     }
@@ -53,14 +56,17 @@ public class BankTest {
     @Test
     public void testTransferFailsWithInsufficientFunds() {
         Bank bank = new Bank();
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
         BankAccount sender = new BankAccount();
         BankAccount receiver = new BankAccount();
 
         bank.registerExistingAccount("1001", sender);
         bank.registerExistingAccount("1002", receiver);
+        customer.addAccountNumber("1001");
+        customer.addAccountNumber("1002");
         sender.deposit(100);
 
-        assertFalse(bank.transferMoney("1001", "1002", 150));
+        assertFalse(bank.transferMoney(customer, "1001", "1002", 150));
         assertEquals(100, sender.getBalance(), 0.01);
         assertEquals(0, receiver.getBalance(), 0.01);
     }
@@ -68,36 +74,43 @@ public class BankTest {
     @Test
     public void testTransferFailsWithNegativeAmount() {
         Bank bank = new Bank();
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
         BankAccount sender = new BankAccount();
         BankAccount receiver = new BankAccount();
 
         bank.registerExistingAccount("1001", sender);
         bank.registerExistingAccount("1002", receiver);
+        customer.addAccountNumber("1001");
+        customer.addAccountNumber("1002");
         sender.deposit(100);
 
-        assertFalse(bank.transferMoney("1001", "1002", -50));
+        assertFalse(bank.transferMoney(customer, "1001", "1002", -50));
     }
 
     @Test
     public void testTransferFailsWithNonexistentReceiver() {
         Bank bank = new Bank();
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
         BankAccount sender = new BankAccount();
 
         bank.registerExistingAccount("1001", sender);
+        customer.addAccountNumber("1001");
         sender.deposit(100);
 
-        assertFalse(bank.transferMoney("1001", "9999", 50));
+        assertFalse(bank.transferMoney(customer, "1001", "9999", 50));
     }
 
     @Test
     public void testTransferFailsWithSameAccount() {
         Bank bank = new Bank();
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
         BankAccount sender = new BankAccount();
 
         bank.registerExistingAccount("1001", sender);
+        customer.addAccountNumber("1001");
         sender.deposit(100);
 
-        assertFalse(bank.transferMoney("1001", "1001", 50));
+        assertFalse(bank.transferMoney(customer, "1001", "1001", 50));
     }
 
     @Test
@@ -281,5 +294,56 @@ public class BankTest {
 
         assertSame(customer,
                 bank.authenticateCustomer("jdoe1001", "password123"));
+    }
+
+    @Test
+    public void testCustomerCannotAccessAnotherCustomersAccount() {
+        Bank bank = new Bank();
+
+        Customer john = new Customer("John Doe", "jdoe1001", "password123");
+        Customer jane = new Customer("Jane Doe", "jdoe1002", "password123");
+
+        String accountNumber = bank.createAdditionalAccount(jane);
+
+        assertNull(bank.getAccountForCustomer(john, accountNumber));
+    }
+
+    @Test
+    public void testTransferToAnotherCustomer() {
+        Bank bank = new Bank();
+
+        Customer john = new Customer("John Doe", "jdoe1001", "password123");
+        Customer jane = new Customer("Jane Doe", "janedoe1002", "password456");
+
+        String johnAccount = bank.createAdditionalAccount(john);
+        String janeAccount = bank.createAdditionalAccount(jane);
+
+        BankAccount sender = bank.getAccountForCustomer(john, johnAccount);
+        BankAccount receiver = bank.getAccountForCustomer(jane, janeAccount);
+
+        sender.deposit(100);
+
+        assertTrue(bank.transferMoney(john, johnAccount, janeAccount, 40));
+        assertEquals(60, sender.getBalance(), 0.01);
+        assertEquals(40, receiver.getBalance(), 0.01);
+    }
+
+    @Test
+    public void testCannotTransferFromAnotherCustomersAccount() {
+        Bank bank = new Bank();
+
+        Customer john = new Customer("John Doe", "jdoe1001", "password123");
+        Customer jane = new Customer("Jane Doe", "janedoe1002", "password456");
+
+        String johnAccount = bank.createAdditionalAccount(john);
+        String janeAccount = bank.createAdditionalAccount(jane);
+
+        BankAccount johnBankAccount =
+                bank.getAccountForCustomer(john, johnAccount);
+
+        johnBankAccount.deposit(100);
+
+        assertFalse(bank.transferMoney(jane, johnAccount, janeAccount, 40));
+        assertEquals(100, johnBankAccount.getBalance(), 0.01);
     }
 }

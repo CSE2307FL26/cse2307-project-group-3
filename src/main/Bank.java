@@ -44,8 +44,10 @@ public class Bank {
         return true;
     }
 
-    public boolean transferMoney(String senderAccount, String receiverAccount, double amount) {
-        BankAccount sender = accounts.get(senderAccount);
+    public boolean transferMoney(Customer customer, String senderAccount,
+        String receiverAccount, double amount) {
+
+        BankAccount sender = getAccountForCustomer(customer, senderAccount);
         BankAccount receiver = accounts.get(receiverAccount);
 
         if (sender == null || receiver == null
@@ -68,7 +70,6 @@ public class Bank {
             nextAccountNumber++;
             accountNumber = String.valueOf(nextAccountNumber);
         }
-
         BankAccount account = new BankAccount();
 
         accounts.put(accountNumber, account);
@@ -136,7 +137,6 @@ public class Bank {
         if (!adminLoggedIn) {
             return null;
         }
-
         return new ArrayList<Customer>(customers);
     }
 

@@ -8,14 +8,14 @@ public class CustomerTest {
 
     @Test
     public void testCustomerOwnsAccount() {
-        Customer customer = new Customer("Melissa");
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
         customer.addAccountNumber("1001");
         assertTrue(customer.ownsAccount("1001"));
     }
 
     @Test
     public void testRemoveAccount() {
-        Customer customer = new Customer("Melissa");
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
         customer.addAccountNumber("1001");
         customer.removeAccountNumber("1001");
         assertFalse(customer.ownsAccount("1001"));
@@ -23,11 +23,29 @@ public class CustomerTest {
 
     @Test
     public void testGetAccountNumbers() {
-        Customer customer = new Customer("Melissa");
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
         customer.addAccountNumber("1001");
         customer.addAccountNumber("1002");
 
         assertTrue(customer.getAccountNumbers().contains("1001"));
         assertTrue(customer.getAccountNumbers().contains("1002"));
+    }
+
+    @Test
+    public void testCorrectCustomerLogin() {
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
+        assertTrue(customer.authenticate("jdoe1001", "password123"));
+    }
+
+    @Test
+    public void testIncorrectCustomerPassword() {
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
+        assertFalse(customer.authenticate("jdoe1001", "wrongpassword"));
+    }
+
+    @Test
+    public void testIncorrectCustomerUsername() {
+        Customer customer = new Customer("John Doe", "jdoe1001", "password123");
+        assertFalse(customer.authenticate("wronguser", "password123"));
     }
 }

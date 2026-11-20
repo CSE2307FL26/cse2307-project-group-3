@@ -6,6 +6,10 @@ import java.util.Set;
 
 public class MainMenu {
 
+    private static final int CUSTOMER_LOGIN_SELECTION = 1;
+    private static final int ADMIN_LOGIN_SELECTION = 2;
+    private static final int EXIT_SELECTION = 3;
+
     private static final int DEPOSIT_SELECTION = 1;
     private static final int WITHDRAWAL_SELECTION = 2;
     private static final int CLOSE_ACCOUNT_SELECTION = 3;
@@ -13,10 +17,9 @@ public class MainMenu {
     private static final int TRANSACTION_HISTORY_SELECTION = 5;
     private static final int TRANSFER_SELECTION = 6;
     private static final int CREATE_ACCOUNT_SELECTION = 7;
-    private static final int ADMIN_LOGIN_SELECTION = 8;
-    private static final int SET_LOW_BALANCE = 9;
-    private static final int EXIT_SELECTION = 10;
-    private static final int MAX_SELECTION = 10;
+    private static final int SET_LOW_BALANCE = 8;
+    private static final int CUSTOMER_LOGOUT_SELECTION = 9;
+    private static final int MAX_CUSTOMER_SELECTION = 9;
 
     private Customer customer;
     private Bank bank;
@@ -24,15 +27,48 @@ public class MainMenu {
     private String activeAccountNumber;
 
     public MainMenu() {
-        this.customer = new Customer("John Doe");
+        this.customer = null;
         this.bank = new Bank();
         this.keyboardInput = new Scanner(System.in);
+        this.activeAccountNumber = null;
+
+        Customer john = new Customer("John Doe", "jdoe1001", "password123");
 
         BankAccount demoAccount = new BankAccount();
         bank.registerExistingAccount("1001", demoAccount);
-        customer.addAccountNumber("1001");
+        john.addAccountNumber("1001");
 
-        bank.registerExistingCustomer(customer);
+        bank.registerExistingCustomer(john);
+    }
+
+    private void displayWelcomeMenu() {
+        System.out.println("1. Customer login");
+        System.out.println("2. Admin login");
+        System.out.println("3. Exit");
+    }
+
+    private void loginAsCustomer() {
+        System.out.print("Enter username: ");
+        String username = keyboardInput.next();
+
+        System.out.print("Enter password: ");
+        String password = keyboardInput.next();
+
+        Customer loggedInCustomer = bank.authenticateCustomer(username, password);
+
+        if (loggedInCustomer == null) {
+            System.out.println("Invalid username or password.");
+            return;
+        }
+
+        customer = loggedInCustomer;
+        activeAccountNumber = null;
+
+        System.out.println("Login successful.");
+        System.out.println("Welcome, " + customer.getCustomerName() + "!");
+
+        selectAccount();
+        customerOptions();
     }
 
     public void displayOptions() {
@@ -50,7 +86,6 @@ public class MainMenu {
                     System.out.println("\tAccount " + accountNumber);
                 }
             }
-            System.out.println();
         }
 
         System.out.println("1. Make a deposit");
@@ -60,9 +95,8 @@ public class MainMenu {
         System.out.println("5. View transaction history");
         System.out.println("6. Transfer to another account");
         System.out.println("7. Create additional account");
-        System.out.println("8. Admin login");
-        System.out.println("9. Set low balance alert");
-        System.out.println("10. Exit the app");
+        System.out.println("8. Set low balance alert");
+        System.out.println("9. Log out");
     }
 
     public int getUserSelection(int max) {
@@ -109,18 +143,29 @@ public class MainMenu {
             case CREATE_ACCOUNT_SELECTION:
                 createAdditionalAccount();
                 break;
-            case ADMIN_LOGIN_SELECTION:
-                loginAsAdmin();
-                break;
             case SET_LOW_BALANCE:
                 setLowBalanceAlert();
                 break;
-            case EXIT_SELECTION:
-                System.out.println("Exiting the app...");
+            case CUSTOMER_LOGOUT_SELECTION:
+                System.out.println("Logging out...");
                 break;
             default:
                 System.out.println("Invalid selection, please try again.");
         }
+    }
+
+    private void customerOptions() {
+        int selection = -1;
+
+        while (selection != CUSTOMER_LOGOUT_SELECTION) {
+            displayOptions();
+            selection = getUserSelection(MAX_CUSTOMER_SELECTION);
+            processInput(selection);
+            System.out.println();
+        }
+
+        customer = null;
+        activeAccountNumber = null;
     }
 
     private void selectAccount() {
@@ -192,7 +237,10 @@ public class MainMenu {
         System.out.print("How much would you like to withdraw: ");
         double withdrawalAmount = keyboardInput.nextDouble();
         
-        if (account.getBalance() - withdrawalAmount < account.getThreshold()) {
+        if (withdrawalAmount > 0
+            && withdrawalAmount <= account.getBalance()
+            && account.getThreshold() > 0
+            && account.getBalance() - withdrawalAmount < account.getThreshold()) {
             System.out.println("This withdrawal would bring your balance below the set threshold of $" + account.getThreshold() + ". Would you like to proceed? (Y/N):");
             String response = keyboardInput.next();
             if (!response.equalsIgnoreCase("Y")) {
@@ -238,13 +286,14 @@ public class MainMenu {
         }
 
         System.out.println("Your current balance is: $" + account.getBalance());
-        if (account.checkIfBelowThreshold()) {
-            System.out.println("Alert: Your balance is below the set threshold of $" + account.getThreshold());
-            System.out.println("Please consider depositing $" + (account.getBalance() - account.getThreshold()) + " or more to bring your balance above the threshold and avoid potential fees.");
-        }
 
-        if(!account.checkIfBelowThreshold()) {
-            System.out.println("Your balance is above the set threshold of $" + account.getThreshold());
+        if (account.checkIfBelowThreshold()) {
+            double amountNeeded = account.getThreshold() - account.getBalance();
+
+            System.out.println("Warning: Your balance is below your threshold of $"
+                    + account.getThreshold());
+            System.out.println("Deposit $" + amountNeeded
+                    + " to reach your threshold.");
         }
     }
 
@@ -298,14 +347,18 @@ public class MainMenu {
         System.out.print("How much would you like to transfer: ");
         double transferAmount = keyboardInput.nextDouble();
 
-        if (transferAmount <= senderAccount.getBalance() && senderAccount.getBalance() - transferAmount < senderAccount.getThreshold()) {
+        if (transferAmount > 0
+            && transferAmount <= senderAccount.getBalance()
+            && senderAccount.getThreshold() > 0
+            && senderAccount.getBalance() - transferAmount
+                < senderAccount.getThreshold()) {
             System.out.print("This transfer would bring your balance below your threshold of $" + senderAccount.getThreshold() + ". Proceed? (Y/N): ");
         
             if (!keyboardInput.next().equalsIgnoreCase("Y")) {
                 System.out.println("Transfer cancelled.");
             return;
+        }
     }
-}
         boolean transferred = bank.transferMoney(
                 activeAccountNumber, receiverAccountNumber, transferAmount);
 
@@ -349,17 +402,25 @@ public class MainMenu {
     }
 
     private void adminAddCustomer() {
-        System.out.print("Enter the customer's name: ");
-        // There's a leftover newline unless this is added
         keyboardInput.nextLine();
+
+        System.out.print("Enter the customer's name: ");
         String customerName = keyboardInput.nextLine();
 
-        Customer newCustomer = bank.addCustomer(customerName);
+        System.out.print("Enter a username: ");
+        String username = keyboardInput.next();
+
+        System.out.print("Enter a password: ");
+        String password = keyboardInput.next();
+
+        Customer newCustomer = bank.addCustomer(customerName, username, password);
 
         if (newCustomer != null) {
             System.out.println("Customer added successfully.");
+            System.out.println("Account number: "
+                    + newCustomer.getAccountNumbers().iterator().next());
         } else {
-            System.out.println("Failed to add customer.");
+            System.out.println("Failed to add customer. Check the details or username.");
         }
     }
 
@@ -423,7 +484,7 @@ public class MainMenu {
                     break;
                 case "5":
                     bank.logoutAdmin();
-                    System.out.println("Returning to customer menu...");
+                    System.out.println("Returning to welcome menu...");
                     break;
                 default:
                     System.out.println("Invalid selection, please try again.");
@@ -449,8 +510,7 @@ public class MainMenu {
         }
 
         System.out.print("Suggested low balance threshold: $" + account.getBalance() * 0.1);
-        
-        System.out.print("Enter your preferred low balance alert threshold: ");
+        System.out.print("\nEnter your preferred low balance alert threshold: ");
         double threshold = keyboardInput.nextDouble();
 
         if (threshold < 0) {
@@ -477,16 +537,25 @@ public class MainMenu {
 
     public void run() {
         System.out.println("---------- Welcome to the 2307 Bank App! ----------");
-        System.out.println("Welcome, " + customer.getCustomerName() + "!");
-
-        selectAccount();
 
         int selection = -1;
 
         while (selection != EXIT_SELECTION) {
-            displayOptions();
-            selection = getUserSelection(MAX_SELECTION);
-            processInput(selection);
+            displayWelcomeMenu();
+            selection = getUserSelection(EXIT_SELECTION);
+
+            switch (selection) {
+                case CUSTOMER_LOGIN_SELECTION:
+                    loginAsCustomer();
+                    break;
+                case ADMIN_LOGIN_SELECTION:
+                    loginAsAdmin();
+                    break;
+                case EXIT_SELECTION:
+                    System.out.println("Exiting the app...");
+                    break;
+            }
+
             System.out.println();
         }
 

@@ -18,8 +18,9 @@ public class MainMenu {
     private static final int TRANSFER_SELECTION = 6;
     private static final int CREATE_ACCOUNT_SELECTION = 7;
     private static final int SET_LOW_BALANCE = 8;
-    private static final int CUSTOMER_LOGOUT_SELECTION = 9;
-    private static final int MAX_CUSTOMER_SELECTION = 9;
+    private static final int SWITCH_ACCOUNT_SELECTION = 9;
+    private static final int CUSTOMER_LOGOUT_SELECTION = 10;
+    private static final int MAX_CUSTOMER_SELECTION = 10;
 
     private Customer customer;
     private Bank bank;
@@ -60,7 +61,6 @@ public class MainMenu {
             System.out.println("Invalid username or password.");
             return;
         }
-
         customer = loggedInCustomer;
         activeAccountNumber = null;
 
@@ -96,7 +96,8 @@ public class MainMenu {
         System.out.println("6. Transfer to another account");
         System.out.println("7. Create additional account");
         System.out.println("8. Set low balance alert");
-        System.out.println("9. Log out");
+        System.out.println("9. Switch account");
+        System.out.println("10. Log out");
     }
 
     public int getUserSelection(int max) {
@@ -116,7 +117,6 @@ public class MainMenu {
                 System.out.println("Invalid selection, please try again.");
             }
         }
-
         return selection;
     }
 
@@ -146,6 +146,9 @@ public class MainMenu {
             case SET_LOW_BALANCE:
                 setLowBalanceAlert();
                 break;
+            case SWITCH_ACCOUNT_SELECTION:
+                selectAccount();
+                break;
             case CUSTOMER_LOGOUT_SELECTION:
                 System.out.println("Logging out...");
                 break;
@@ -163,7 +166,6 @@ public class MainMenu {
             processInput(selection);
             System.out.println();
         }
-
         customer = null;
         activeAccountNumber = null;
     }
@@ -173,20 +175,19 @@ public class MainMenu {
             System.out.println("You have no accounts.");
             return;
         }
-
-        while (activeAccountNumber == null) {
+        while (true) {
             System.out.println("Your Accounts:");
 
             for (String accountNumber : customer.getAccountNumbers()) {
                 System.out.println("Account " + accountNumber);
             }
-
             System.out.print("Enter the account number you want to use: ");
             String accountNumber = keyboardInput.next();
 
             if (bank.getAccountForCustomer(customer, accountNumber) != null) {
                 activeAccountNumber = accountNumber;
                 System.out.println("Now using account " + activeAccountNumber);
+                return;
             } else {
                 System.out.println("Invalid account number. Please try again.");
             }
@@ -198,14 +199,12 @@ public class MainMenu {
             System.out.println("Please select an account first.");
             return null;
         }
-
         BankAccount account =
                 bank.getAccountForCustomer(customer, activeAccountNumber);
 
         if (account == null) {
             System.out.println("Active account could not be found.");
         }
-
         return account;
     }
 
@@ -215,7 +214,6 @@ public class MainMenu {
         if (account == null) {
             return;
         }
-
         System.out.print("How much would you like to deposit: ");
         double depositAmount = keyboardInput.nextDouble();
 
@@ -233,7 +231,6 @@ public class MainMenu {
         if (account == null) {
             return;
         }
-
         System.out.print("How much would you like to withdraw: ");
         double withdrawalAmount = keyboardInput.nextDouble();
         
@@ -284,7 +281,6 @@ public class MainMenu {
         if (account == null) {
             return;
         }
-
         System.out.println("Your current balance is: $" + account.getBalance());
 
         if (account.checkIfBelowThreshold()) {
@@ -332,35 +328,34 @@ public class MainMenu {
         if (senderAccount == null) {
             return;
         }
-
         System.out.print("Enter the recipient's account number: ");
         String receiverAccountNumber = keyboardInput.next();
-
-        BankAccount receiverAccount =
-                bank.getAccountForCustomer(customer, receiverAccountNumber);
-
-        if (receiverAccount == null) {
-            System.out.println("Invalid recipient account number.");
-            return;
-        }
 
         System.out.print("How much would you like to transfer: ");
         double transferAmount = keyboardInput.nextDouble();
 
-        if (transferAmount > 0
-            && transferAmount <= senderAccount.getBalance()
-            && senderAccount.getThreshold() > 0
-            && senderAccount.getBalance() - transferAmount
-                < senderAccount.getThreshold()) {
-            System.out.print("This transfer would bring your balance below your threshold of $" + senderAccount.getThreshold() + ". Proceed? (Y/N): ");
-        
-            if (!keyboardInput.next().equalsIgnoreCase("Y")) {
-                System.out.println("Transfer cancelled.");
+        if (!Double.isFinite(transferAmount)
+                || transferAmount <= 0
+                || transferAmount > senderAccount.getBalance()
+                || receiverAccountNumber.equals(activeAccountNumber)) {
+            System.out.println("Transfer could not be completed.");
             return;
         }
-    }
+        if (senderAccount.getThreshold() > 0
+                && senderAccount.getBalance() - transferAmount
+                        < senderAccount.getThreshold()) {
+
+            System.out.print("This transfer would bring your balance below "
+                    + "your threshold of $" + senderAccount.getThreshold()
+                    + ". Proceed? (Y/N): ");
+
+            if (!keyboardInput.next().equalsIgnoreCase("Y")) {
+                System.out.println("Transfer cancelled.");
+                return;
+            }
+        }
         boolean transferred = bank.transferMoney(
-                activeAccountNumber, receiverAccountNumber, transferAmount);
+                customer, activeAccountNumber, receiverAccountNumber, transferAmount);
 
         if (transferred) {
             System.out.println("Transfer successful.");
@@ -430,12 +425,10 @@ public class MainMenu {
             System.out.println("Administrator login required.");
             return;
         }
-
         if (customers.isEmpty()) {
             System.out.println("No customers found.");
             return;
         }
-
         System.out.println("Customers at 2307 Bank:");
 
         for (Customer registeredCustomer : customers) {
@@ -508,7 +501,6 @@ public class MainMenu {
         if (account == null) {
             return;
         }
-
         System.out.print("Suggested low balance threshold: $" + account.getBalance() * 0.1);
         System.out.print("\nEnter your preferred low balance alert threshold: ");
         double threshold = keyboardInput.nextDouble();
@@ -517,7 +509,6 @@ public class MainMenu {
             System.out.println("Threshold cannot be negative.");
             return;
         }
-
         System.out.println("Would you like to set the low balance alert to all your accounts? (Y/N): ");
         String response = keyboardInput.next();
 
@@ -558,7 +549,6 @@ public class MainMenu {
 
             System.out.println();
         }
-
         System.out.println("----- Thank you for using the 2307 Bank App! -----");
     }
 

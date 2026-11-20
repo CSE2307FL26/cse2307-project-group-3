@@ -29,8 +29,16 @@
 7. A bank administrator should be able to freeze an existing customer account, preventing withdrawals and transfers.
 8. A bank administrator should be able to unfreeze a frozen customer account, allowing normal account activity again.
 
+Default customer login: 
+- username: jdoe1001
+- password: password123
+  
+Default admin login:
+- No username needed
+- password: admin123
+
 ## Is there anything that you implemented but doesn't currently work?
-The transfer method cannot actually transfer anything to an outside account, as all we have implemented in this iteration is based on the current customer’s current accounts. 
+
 
 ## What commands are needed to compile and run your code from the command line?
 javac src/main/*.java
